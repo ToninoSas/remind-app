@@ -49,6 +49,8 @@ export async function createPatientAction(data, caregiverId) {
 
 // src/app/actions/patients.js
 
+// NELLA FORMA: id,patologia,descrizione,nome_completo,email_paziente
+
 export async function getPatientsAction(caregiverId) {
   // Recuperiamo i dati clinici e il nome dall'account (se esiste)
   // Usiamo COALESCE per gestire i casi in cui utente_id è NULL
@@ -61,18 +63,18 @@ export async function getPatientsAction(caregiverId) {
       u.email as email_paziente
     FROM Pazienti p
     LEFT JOIN Utenti u ON p.utente_id = u.id
-    WHERE p.caregiver_id = ?
+    WHERE p.caregiver_id = ? AND p.attivo = 1
     ORDER BY p.id DESC
   `).all(caregiverId);
 }
-
+// NELLA FORMA: id,patologia,descrizione,caregiver_id,utente_id,nome,email,data_iscr
 export async function getDetailedPatientAction(patientId) {
   // 1. Dati Anagrafici e Account
   const info = db.prepare(`
     SELECT p.*, u.nome, u.email, u.data_creazione as data_iscr
     FROM Pazienti p
     LEFT JOIN Utenti u ON p.utente_id = u.id
-    WHERE p.id = ?
+    WHERE p.id = ? AND p.attivo = 1
   `).get(patientId);
 
   // 2. Esercizi Assegnati
@@ -122,5 +124,25 @@ export async function updatePatientAction(patientId, utenteId, data) {
     console.error("Errore aggiornamento:", error);
     if (error.message.includes("UNIQUE")) return { error: "Email già in uso." };
     return { error: "Errore durante il salvataggio." };
+  }
+}
+
+// OGNI VOLTA CHE C'È UN ELIMINAZIONE NON DEVE ESSERE MAI FISICA MA SEMPRE LOGICA
+// CIOÈ DOPPIAMO AGGIORNARE UN CAMPO DEL TIPO "eliminato"/"attivo"
+export async function softDeletePatientAction(patientId) {
+  try {
+    // Aggiorniamo lo stato invece di eliminare il record
+    db.prepare(`
+      UPDATE Pazienti 
+      SET attivo = 0 
+      WHERE id = ?
+    `).run(patientId);
+
+    // Invalida la cache per mostrare la lista aggiornata
+    revalidatePath("/caregiver/pazienti");
+    return { success: true };
+  } catch (error) {
+    console.error("Errore cancellazione logica:", error);
+    return { error: "Errore durante la disattivazione del paziente." };
   }
 }

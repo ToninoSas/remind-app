@@ -1,10 +1,12 @@
 "use client";
 import { useState, useEffect, use, useCallback } from "react";
-import { getDetailedPatientAction, updatePatientAction } from "@/app/actions/patients";
+import { getDetailedPatientAction, updatePatientAction, softDeletePatientAction } from "@/app/actions/patients";
 import StatistichePaziente from "@/app/components/layout/caregiver/StatistichePaziente";
 
-export default function SchedaPaziente({ params }) {
+import { useRouter } from "next/navigation";
 
+export default function SchedaPaziente({ params }) {
+    const router = useRouter();
     const resolvedParams = use(params);
     const patientId = resolvedParams.id;
 
@@ -15,6 +17,8 @@ export default function SchedaPaziente({ params }) {
 
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({});
+
+    const [isDeleting, setIsDeleting] = useState(false);
 
     // --- 1. FUNZIONE DI CARICAMENTO DATI ---
     const loadPatientData = useCallback(async () => {
@@ -56,10 +60,31 @@ export default function SchedaPaziente({ params }) {
         setLoading(false);
     };
 
+    const handleDelete = async () => {
+        const res = await softDeletePatientAction(patientId);
+        if (res.success) {
+            router.push("/caregiver/pazienti"); // Torna alla lista dopo l'eliminazione
+        } else {
+            alert(res.error);
+            setIsDeleting(false);
+        }
+    };
+
     if (loading) return <div className="p-10 text-center">Caricamento cartella...</div>;
 
     return (
-        <div className="max-w-5xl mx-auto space-y-8">
+        <div className="max-w-5xl mx-auto space-y-6">
+            {/* PULSANTE TORNA INDIETRO */}
+            <button
+                onClick={() => router.back()}
+                className="group flex items-center gap-2 text-slate-400 hover:text-blue-600 transition-colors font-bold ml-2"
+            >
+                <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center group-hover:bg-blue-50 transition-all">
+                    ←
+                </div>
+                Torna alla lista
+            </button>
+
             {/* MESSAGGIO DI SUCCESSO (Floating Toast) */}
             {showSuccess && (
                 <div className="fixed top-10 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-4 duration-300">
@@ -170,6 +195,51 @@ export default function SchedaPaziente({ params }) {
                                             className="w-full p-3 bg-slate-50 border rounded-xl mt-1 resize-none"
                                         />
                                     </label>
+                                </div>
+                            </div>
+                        )}
+
+                        <hr className="border-slate-100" />
+
+                        <section className="bg-red-50 p-6 rounded-2xl border border-red-100">
+                            <h4 className="text-red-800 font-bold mb-2">Zona di Pericolo</h4>
+                            <p className="text-red-600/70 text-sm mb-4">
+                                L'eliminazione del paziente rimuoverà permanentemente la cartella clinica,
+                                l'account di accesso e tutto lo storico degli esercizi.
+                            </p>
+                            <button
+                                onClick={() => setIsDeleting(true)}
+                                className="bg-white text-red-600 border border-red-200 px-6 py-2 rounded-xl font-bold hover:bg-red-600 hover:text-white transition-all shadow-sm"
+                            >
+                                Elimina Paziente
+                            </button>
+                        </section>
+
+                        {/* MODALE DI CONFERMA ELIMINAZIONE */}
+                        {isDeleting && (
+                            <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+                                <div className="bg-white p-8 rounded-[2rem] shadow-2xl max-w-sm w-full text-center animate-in zoom-in duration-200">
+                                    <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                                        ⚠️
+                                    </div>
+                                    <h3 className="text-xl font-black text-slate-800 mb-2">Sei sicuro?</h3>
+                                    <p className="text-slate-500 text-sm mb-8">
+                                        Questa azione non è reversibile. Tutti i dati di <strong>{data.info.nome}</strong> andranno perduti.
+                                    </p>
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={() => setIsDeleting(false)}
+                                            className="flex-1 py-3 font-bold text-slate-400 hover:bg-slate-50 rounded-xl"
+                                        >
+                                            Annulla
+                                        </button>
+                                        <button
+                                            onClick={handleDelete}
+                                            className="flex-1 py-3 bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-200"
+                                        >
+                                            Sì, Elimina
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         )}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/context/auth-context";
-import { getExercisesAction } from "@/app/actions/excercises";
+import { getExercisesAction, softDeleteExerciseAction } from "@/app/actions/excercises";
 import CreateExerciseForm from "@/app/components/layout/caregiver/CreateExcerciseForm";
 import ExercisePreview from "@/app/components/layout/caregiver/ExercisePreview";
 
@@ -16,6 +16,7 @@ export default function EserciziPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("tutti");
   const [previewExercise, setPreviewExercise] = useState(null);
+  const [isDeletingId, setIsDeletingId] = useState(null);
 
   // Funzione per caricare gli esercizi dal DB
   const loadExercises = useCallback(async () => {
@@ -44,6 +45,16 @@ export default function EserciziPage() {
   const handleCloseForm = () => {
     setView("list");
     loadExercises(); // Rinfresca la lista dopo salvataggio o chiusura
+  };
+
+  const handleDelete = async (id) => {
+    const res = await softDeleteExerciseAction(id);
+    if (res.success) {
+      setIsDeletingId(null);
+      loadExercises(); // Ricarica la lista
+    } else {
+      alert(res.error);
+    }
   };
 
   // Logica di filtraggio
@@ -119,8 +130,8 @@ export default function EserciziPage() {
                 key={t}
                 onClick={() => setFilter(t)}
                 className={`px-6 py-2 rounded-full font-bold text-sm capitalize whitespace-nowrap transition-all ${filter === t
-                    ? 'bg-slate-800 text-white shadow-lg'
-                    : 'bg-white text-slate-400 border border-slate-200 hover:border-slate-300'
+                  ? 'bg-slate-800 text-white shadow-lg'
+                  : 'bg-white text-slate-400 border border-slate-200 hover:border-slate-300'
                   }`}
               >
                 {t}
@@ -161,13 +172,24 @@ export default function EserciziPage() {
 
                   <div className="pt-5 border-t border-slate-50 flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
                     <span className="text-[10px] font-bold text-slate-300 uppercase">ID: #{ex.id}</span>
-                    <button
-                      onClick={() => handleOpenEdit(ex)}
-                      className="flex items-center gap-2 text-sm font-black text-blue-600 hover:text-blue-800 transition-colors"
-                    >
-                      ✏️ MODIFICA
-                    </button>
+                    <div className="flex gap-4">
+                      <button
+                        onClick={() => handleOpenEdit(ex)}
+                        className="flex items-center gap-2 text-sm font-black text-blue-600 hover:text-blue-800 transition-colors"
+                      >
+                        ✏️ MODIFICA
+                      </button>
+
+                      <button
+                        onClick={() => setIsDeletingId(ex.id)}
+                        className="flex items-center gap-2 text-sm font-black text-red-400 hover:text-red-600 transition-colors"
+                      >
+                        🗑️ ELIMINA
+                      </button>
+                    </div>
                   </div>
+
+
                 </div>
               ))}
             </div>
@@ -190,11 +212,38 @@ export default function EserciziPage() {
         </div>
       )}
       {previewExercise && (
-        <ExercisePreview 
-          esercizio={previewExercise} 
-          onClose={() => setPreviewExercise(null)} 
+        <ExercisePreview
+          esercizio={previewExercise}
+          onClose={() => setPreviewExercise(null)}
         />
       )}
+
+      {isDeletingId && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div className="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center animate-in zoom-in duration-200">
+            <h3 className="text-xl font-black text-slate-800 mb-2">Eliminare l'esercizio?</h3>
+            <p className="text-slate-500 text-sm mb-8">
+              Verrà rimosso dalla libreria ma i risultati passati dei pazienti verranno conservati.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setIsDeletingId(null)}
+                className="flex-1 py-3 font-bold text-slate-400 hover:bg-slate-50 rounded-xl"
+              >
+                Annulla
+              </button>
+              <button
+                onClick={() => handleDelete(isDeletingId)}
+                className="flex-1 py-3 bg-red-600 text-white font-bold rounded-xl shadow-lg"
+              >
+                Elimina
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
+
+
   );
 }

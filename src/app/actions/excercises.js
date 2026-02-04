@@ -31,7 +31,7 @@ export async function getExercisesAction(creatoreId) {
   try {
     return db.prepare(`
       SELECT * FROM Esercizi 
-      WHERE creatore_id = ? 
+      WHERE creatore_id = ? AND attivo = 1
       ORDER BY data_creazione DESC
     `).all(creatoreId);
   } catch (error) {
@@ -60,5 +60,15 @@ export async function updateExerciseAction(id, data) {
   } catch (error) {
     console.error("Errore aggiornamento esercizio:", error.message);
     return { error: error.message };
+  }
+}
+
+export async function softDeleteExerciseAction(id) {
+  try {
+    db.prepare("UPDATE Esercizi SET attivo = 0 WHERE id = ?").run(id);
+    revalidatePath("/caregiver/esercizi");
+    return { success: true };
+  } catch (error) {
+    return { error: "Errore durante l'eliminazione dell'esercizio." };
   }
 }
