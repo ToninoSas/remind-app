@@ -1,7 +1,9 @@
 "use client";
 import { useState, useEffect, use, useCallback } from "react";
 import { getDetailedPatientAction, updatePatientAction, softDeletePatientAction } from "@/app/actions/patients";
+import { assignExerciseAction, unassignExerciseAction } from "@/app/actions/assignments";
 import StatistichePaziente from "@/app/components/layout/caregiver/StatistichePaziente";
+import AssignModal from "@/app/components/layout/caregiver/AssignModel";
 
 import { useRouter } from "next/navigation";
 
@@ -19,6 +21,8 @@ export default function SchedaPaziente({ params }) {
     const [editData, setEditData] = useState({});
 
     const [isDeleting, setIsDeleting] = useState(false);
+
+    const [showAssignModal, setShowAssignModal] = useState(false);
 
     // --- 1. FUNZIONE DI CARICAMENTO DATI ---
     const loadPatientData = useCallback(async () => {
@@ -67,6 +71,28 @@ export default function SchedaPaziente({ params }) {
         } else {
             alert(res.error);
             setIsDeleting(false);
+        }
+    };
+
+    const handleAssign = async (esercizioId) => {
+        const res = await assignExerciseAction(patientId, esercizioId);
+        if (res.success) {
+            setShowAssignModal(false);
+            loadPatientData(); // Ricarichiamo la scheda per vedere il nuovo esercizio in lista
+        } else {
+            alert(res.error);
+        }
+    };
+
+    const handleUnassign = async (assegnazioneId) => {
+        if (!confirm("Vuoi davvero rimuovere questo esercizio assegnato?")) return;
+
+        const res = await unassignExerciseAction(assegnazioneId, patientId);
+        if (res.success) {
+            // Ricarichiamo i dati per aggiornare la lista
+            await loadPatientData();
+        } else {
+            alert(res.error);
         }
     };
 
@@ -247,18 +273,69 @@ export default function SchedaPaziente({ params }) {
                 )}
 
                 {activeTab === "esercizi" && (
-                    <div className="space-y-4">
-                        {data.esercizi.map((ex, i) => (
-                            <div key={i} className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                <div>
-                                    <h4 className="font-bold">{ex.titolo}</h4>
-                                    <p className="text-sm text-slate-500">{ex.tipo}</p>
+                    // per mostrare tutti gli esercizi assegnati 
+                    <div className="space-y-6">
+                        <div className="flex justify-between items-center">
+                            <h3 className="text-xl font-bold text-slate-800">Esercizi Assegnati</h3>
+                            {/* pulsante per assegnare un nuovo esercizio */}
+                            <button
+                                onClick={() => setShowAssignModal(true)}
+                                className="bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg hover:bg-blue-700 transition-all"
+                            >
+                                + Assegna Nuovo
+                            </button>
+                        </div>
+
+                        <div className="grid gap-4">
+                            {data.esercizi.length > 0 ? data.esercizi.map((ex, i) => (
+                                <div key={i} className="flex justify-between items-center p-6 bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-xl">
+                                            {ex.tipo === 'quiz' ? '🧩' : ex.tipo === 'calcolo' ? '🔢' : '🧠'}
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-slate-800">{ex.titolo}</h4>
+                                            <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
+                                                Assegnato il: {new Date(ex.data_assegnazione).toLocaleDateString('it-IT')}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        {/* Mostriamo il tasto rimuovi solo se l'esercizio non è ancora stato completato */}
+                                        {ex.stato === 'da_svolgere' && (
+                                            <button
+                                                onClick={() => handleUnassign(ex.assegnazione_id)}
+                                                className="opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold text-red-400 hover:text-red-600 px-4 py-2"
+                                            >
+                                                Rimuovi Errore
+                                            </button>
+                                        )}
+
+                                        <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${ex.stato === 'completato' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
+                                            }`}>
+                                            {ex.stato.replace('_', ' ')}
+                                        </span>
+                                    </div>
+                                    {/* <div className="flex items-center gap-4">
+                                        <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${ex.stato === 'completato' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
+                                            }`}>
+                                            {ex.stato.replace('_', ' ')}
+                                        </span>
+                                    </div> */}
                                 </div>
-                                <span className="px-4 py-1 rounded-full text-xs font-black uppercase bg-blue-100 text-blue-700">
-                                    {ex.stato}
-                                </span>
-                            </div>
-                        ))}
+                            )) : (
+                                <div className="text-center py-10 text-slate-400 bg-slate-50 rounded-3xl border-2 border-dashed">
+                                    Nessun esercizio assegnato al momento.
+                                </div>
+                            )}
+                        </div>
+
+                        {showAssignModal && (
+                            <AssignModal
+                                onAssign={handleAssign}
+                                onClose={() => setShowAssignModal(false)}
+                            />
+                        )}
                     </div>
                 )}
 

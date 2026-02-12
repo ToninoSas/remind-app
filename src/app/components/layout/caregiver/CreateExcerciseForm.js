@@ -17,6 +17,7 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
 
   // Inizializzazione domande (parsing se in modifica, altrimenti struttura base)
   const [domande, setDomande] = useState(() => {
+    // se sono in modifica devo caricare gli input con i campi vecchi
     if (initialData?.contenuto_json) {
       try {
         return JSON.parse(initialData.contenuto_json).domande;
@@ -35,7 +36,13 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
     }];
   });
 
+  /* 
+  Quando aggiorno le domande, creo una copia della lista, 
+  perchè se aggiorno la lista corrente il riferimento rimane uguale e l'interfaccia non si aggiorna
+  */
+
   // --- LOGICA GESTIONE DOMANDE ---
+  // quando devo aggiungere una nuova domanda, prendo le domande vecchie e ne aggiungo una vuota
   const addDomanda = () => {
     setDomande([...domande, {
       id: Date.now(),
@@ -45,6 +52,7 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
     }]);
   };
 
+  // dato un index, rimuovo la domanda a quell index
   const removeDomanda = (index) => {
     if (domande.length > 1) {
       setDomande(domande.filter((_, i) => i !== index));
@@ -52,26 +60,32 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
   };
 
   // --- LOGICA GESTIONE OPZIONI ---
+  // dato un index, accedo a domande[index] e aggiungo un opzione vuota
   const addOpzione = (qIndex) => {
     const newDomande = [...domande];
     newDomande[qIndex].opzioni.push({ testo: "", isCorretta: false });
     setDomande(newDomande);
   };
 
+  // dato l'indice della domanda e l'indice dell'opzione, 
   const removeOpzione = (qIndex, oIndex) => {
     const newDomande = [...domande];
     if (newDomande[qIndex].opzioni.length > 2) {
+      // alla posizione oIndex, rimuovi 1 elemento
       newDomande[qIndex].opzioni.splice(oIndex, 1);
       setDomande(newDomande);
     }
   };
 
+  // dato l'indice della domanda e l'indice dell'opzione
+  // inverto lo stato isCorretta
   const toggleCorretta = (qIndex, oIndex) => {
     const newDomande = [...domande];
     newDomande[qIndex].opzioni[oIndex].isCorretta = !newDomande[qIndex].opzioni[oIndex].isCorretta;
     setDomande(newDomande);
   };
 
+  // dato l'indice della domanda e l'indice dell'opzione aggiorna il testo
   const updateOpzioneTesto = (qIndex, oIndex, valore) => {
     const newDomande = [...domande];
     newDomande[qIndex].opzioni[oIndex].testo = valore;
@@ -93,6 +107,8 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
       contenuto: { tipo, domande }
     };
 
+    // se erano presenti dei dati iniziali (quindi ero in modalità modifica) modifico
+    // altrimeni creo
     const res = initialData
       ? await updateExerciseAction(initialData.id, payload)
       : await createExerciseAction(payload, user.id);
@@ -124,6 +140,7 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
             <input value={titolo} onChange={e => setTitolo(e.target.value)} className="w-full p-4 bg-slate-50 border rounded-2xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="Es: Gestione del resto" />
           </div>
           <div>
+            {/* selezione tipo esercizio */}
             <label className="block text-xs font-black text-slate-400 uppercase mb-2 ml-1">Categoria</label>
             <select value={tipo} onChange={e => setTipo(e.target.value)} className="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
               <option value="quiz">Quiz Cognitivo</option>
@@ -132,6 +149,7 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
             </select>
           </div>
         </div>
+        {/* selettore difficoltà */}
         <div className="space-y-5">
           <div>
             <label className="block text-xs font-black text-slate-400 uppercase mb-2 ml-1">Difficoltà: {difficolta}</label>

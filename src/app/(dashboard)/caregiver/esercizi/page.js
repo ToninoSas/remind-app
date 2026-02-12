@@ -19,14 +19,27 @@ export default function EserciziPage() {
   const [isDeletingId, setIsDeletingId] = useState(null);
 
   // Funzione per caricare gli esercizi dal DB
+  // senza useCallback ogni volta che renderizzo la pagina creo una nuova funziona
+  // con useCallback invece non ne crea una nuova e ti restituisce quella che aveva
   const loadExercises = useCallback(async () => {
     if (!user?.id) return;
-    setLoading(true);
+    // imposto il caricamento
+    setLoading(true); 
+    // prendo gli esercizi
     const data = await getExercisesAction(user.id);
     setEsercizi(data);
     setLoading(false);
+    // una volta che ho gli esercizi caricati il caricamento è finito
   }, [user?.id]);
-
+  /*
+  FUNZIONAMENTO useEffect
+  ha una lista delle dipendenze
+  - se non passo nulla -> viene eseguita a ogni render
+  - lista vuota -> viene eseguita solo una volta (quando il componente viene creato)
+  - valore -> viene eseguita all'inzio e ogni volta che il valore viene aggiornato
+  */
+ 
+  // useEffect vede loadExcercises è la esegue per la prima volta
   useEffect(() => {
     loadExercises();
   }, [loadExercises]);
@@ -72,11 +85,10 @@ export default function EserciziPage() {
     }
   };
 
+  // VIENE RESTITUITO DURANTE IL CARICAMENTO
   if (loading && esercizi.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
-      </div>
+       <div className="p-10 text-center">Caricamento cartella...</div>
     );
   }
 

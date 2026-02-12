@@ -1,0 +1,73 @@
+1. La Filosofia: Server First
+
+A differenza di una classica React SPA (Single Page Application) dove tutto è Client-side, Next.js adotta un approccio Server-First.
+
+    Default: Tutti i componenti sono Server Components.
+
+    Vantaggio: Il codice JavaScript dei Server Components non viene inviato al browser. Meno JS = Caricamento più veloce.
+
+    Client Components: Si usano solo quando serve interattività (onClick, useState, etc.) aggiungendo la direttiva 'use client' in cima al file.
+
+2. Il Ciclo di Vita della Pagina
+
+Next.js gestisce il caricamento in tre fasi distinte per ottimizzare l'esperienza utente:
+A. Primo Avvio (Pre-rendering)
+
+Per evitare la "pagina bianca", il server esegue tutto il codice (sia Server che Client components) e genera un file HTML statico completo.
+
+    Risultato: L'utente vede subito il contenuto, anche se non è ancora interattivo.
+
+B. Idratazione (Hydration)
+
+Una volta mostrato l'HTML, il browser scarica il JavaScript necessario per i Client Components.
+
+    Metafora della spugna: L'HTML è la spugna secca (la struttura c'è, ma non "assorbe" i click). Il JS è l'acqua che la riempie rendendola funzionale.
+
+    Prima: Il bottone è visibile ma inerte.
+
+    Dopo: React prende il controllo e i bottoni rispondono.
+
+C. Navigazione SPA (Soft Navigation)
+
+Una volta caricata, l'app si comporta come una SPA fluida.
+
+    Intercettazione: Next intercetta i cambi di URL.
+
+    Efficienza: Non richiede un nuovo HTML intero, ma chiede al server solo i dati della parte che cambia (il "pezzo" di pagina nuovo).
+
+3. Sotto il Cofano: Il React Server Component Payload (RSCP)
+
+Invece di restituire HTML pesante durante la navigazione, il server invia un RSC Payload.
+
+    Cos'è: Un formato simile al JSON che descrive l'albero dei componenti.
+
+    Come funziona: React riceve questo payload nel browser, lo confronta con la pagina attuale e aggiorna solo il DOM necessario.
+
+    Stato preservato: Se navighi tra pagine che condividono lo stesso layout, quel layout non viene toccato, mantenendo ad esempio il testo scritto in una barra di ricerca.
+
+4. Server Actions e Gestione Dati
+
+Le Server Actions permettono di scrivere logica server (es. salvataggio su DB) senza creare API manuali.
+
+    Definizione: Funzioni async con la direttiva 'use server'.
+
+    Traduzione automatica: Next trasforma la chiamata alla funzione in una richiesta HTTP POST invisibile.
+
+    revalidatePath(): Fondamentale per la cache. Dice a Next: "I dati sono cambiati, la vecchia versione salvata in cache non è più valida, rigenera la vista".
+
+5. Architettura dei File (app/ directory)
+File	Scopo	Comportamento
+layout.js	Guscio comune (Navbar, Sidebar).	Persistente. Non si ricarica durante la navigazione.
+page.js	Contenuto unico della rotta.	Si distrugge e si ricrea ad ogni cambio pagina.
+loading.js	UI di caricamento (Skeleton).	Mostrato automaticamente grazie a React Suspense durante il fetch.
+
+    Nota sulla Navigazione: Next.js controlla se il codice della pagina di destinazione è già nella cache locale del browser. Se c'è, renderizza istantaneamente; se manca, effettua il fetch del payload.
+
+Tabella Riassuntiva: Quando usare cosa?
+Feature	Server Component (Default)	Client Component ('use client')
+Fetch di dati	✅ Sì (diretto sul DB/API)	❌ No (meglio evitare)
+Accesso a chiavi segrete	✅ Sì (sicuro)	❌ No (esposte nel browser)
+Hook (useState, useEffect)	❌ No	✅ Sì
+Eventi (onClick, etc.)	❌ No	✅ Sì
+
+Ti piacerebbe che aggiungessi una sezione specifica su come gestire i Metadata (SEO) o su come funziona il Caching dei dati nelle fetch?
