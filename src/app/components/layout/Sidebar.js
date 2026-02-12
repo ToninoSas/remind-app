@@ -12,7 +12,15 @@ export default function Sidebar() {
   // Se non c'è utente, non mostriamo la sidebar
   if (!user) return null;
 
-  const navItems = getNavigation(user.ruolo);
+  const handleLogout = async () => {
+    // Chiamiamo l'azione server
+    await logoutAction();
+    // Il redirect avviene già dentro l'azione, 
+    // ma per sicurezza forziamo un refresh
+    router.refresh(); 
+  };
+
+  const navItems = getNavigation(user.Ruolo);
 
   return (
     <>
@@ -44,8 +52,8 @@ export default function Sidebar() {
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-slate-200" />
               <div>
-                <p className="font-bold text-sm">{user.nome}</p>
-                <p className="text-xs text-slate-500 uppercase">{user.ruolo}</p>
+                <p className="font-bold text-sm">{user.Nome}</p>
+                <p className="text-xs text-slate-500 uppercase">{user.Ruolo}</p>
               </div>
             </div>
             <button 

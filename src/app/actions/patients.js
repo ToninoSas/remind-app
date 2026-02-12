@@ -6,31 +6,26 @@ import { revalidatePath } from "next/cache";
 export async function createPatientAction(data, caregiverId) {
   const { nome, cognome, patologia, descrizione, emailAccesso, passwordAccesso } = data;
 
-  // Validazione rapida lato server
   if (!emailAccesso || !passwordAccesso) {
     return { error: "Le credenziali di accesso sono obbligatorie." };
   }
 
   const transaction = db.transaction(() => {
-    // 1. Creazione Account Utente (Obbligatoria)
     const hashedPassword = bcrypt.hashSync(passwordAccesso, 10);
+
+    // 1. Inserimento Utente (Nota: Password_hash con 'h' minuscola come da schema)
     const userRes = db.prepare(`
-      INSERT INTO Utenti (nome, email, password_hash, ruolo)
-      VALUES (?, ?, ?, 'paziente')
-    `).run(`${nome} ${cognome}`, emailAccesso, hashedPassword);
-    
+      INSERT INTO Utenti (Nome, Cognome, Email, Password_hash, Ruolo)
+      VALUES (?, ?, ?, ?, 'paziente')
+    `).run(nome, cognome, emailAccesso, hashedPassword);
+
     const utenteId = userRes.lastInsertRowid;
 
-    // 2. Creazione Profilo Paziente collegato all'Utente
+    // 2. Inserimento Paziente
     const patientRes = db.prepare(`
-      INSERT INTO Pazienti (patologia, descrizione, caregiver_id, utente_id)
+      INSERT INTO Pazienti (Patologia, Descrizione, Caregiver_id, Utente_id)
       VALUES (?, ?, ?, ?)
-    `).run(
-      patologia || "Non specificata", 
-      descrizione || "", 
-      caregiverId, 
-      utenteId
-    );
+    `).run(patologia || "Non specificata", descrizione || "", caregiverId, utenteId);
 
     return patientRes.lastInsertRowid;
   });
@@ -40,80 +35,53 @@ export async function createPatientAction(data, caregiverId) {
     revalidatePath("/caregiver/pazienti");
     return { success: true, id: resultId };
   } catch (error) {
-    if (error.message.includes("UNIQUE")) {
-      return { error: "Questa email è già associata a un altro utente." };
-    }
-    return { error: "Errore durante il salvataggio: " + error.message };
+    console.error("Errore SQL:", error.message);
+    if (error.message.includes("UNIQUE")) return { error: "Email già in uso." };
+    return { error: "Errore durante il salvataggio." };
   }
 }
 
-// src/app/actions/patients.js
-
-// NELLA FORMA: id,patologia,descrizione,nome_completo,email_paziente
-
 export async function getPatientsAction(caregiverId) {
-  // Recuperiamo i dati clinici e il nome dall'account (se esiste)
-  // Usiamo COALESCE per gestire i casi in cui utente_id è NULL
+  // Cambiato != NULL con IS NULL per vedere solo i pazienti attivi
   return db.prepare(`
     SELECT 
-      p.id, 
-      p.patologia, 
-      p.descrizione, 
-      u.nome as nome_completo,
-      u.email as email_paziente
+      p.ID, 
+      p.Patologia, 
+      p.Descrizione, 
+      u.Nome,
+      u.Cognome,
+      u.Email as email_paziente
     FROM Pazienti p
-    LEFT JOIN Utenti u ON p.utente_id = u.id
-    WHERE p.caregiver_id = ? AND p.attivo = 1
-    ORDER BY p.id DESC
+    LEFT JOIN Utenti u ON p.Utente_id = u.ID
+    WHERE p.Caregiver_id = ? AND p.Data_Eliminazione IS NULL
+    ORDER BY p.ID DESC
   `).all(caregiverId);
-}
-// NELLA FORMA: id,patologia,descrizione,caregiver_id,utente_id,nome,email,data_iscr
-export async function getDetailedPatientAction(patientId) {
-  // 1. Dati Anagrafici e Account
-  const info = db.prepare(`
-    SELECT p.*, u.nome, u.email, u.data_creazione as data_iscr
-    FROM Pazienti p
-    LEFT JOIN Utenti u ON p.utente_id = u.id
-    WHERE p.id = ? AND p.attivo = 1
-  `).get(patientId);
-
-  // 2. Esercizi Assegnati
-  const esercizi = db.prepare(`
-    SELECT e.titolo, e.tipo, a.stato, a.data_assegnazione
-    FROM Assegnazioni a
-    JOIN Esercizi e ON a.esercizio_id = e.id
-    WHERE a.paziente_id = ?
-  `).all(patientId);
-
-  // 3. Statistiche (Svolgimenti)
-  const stats = db.prepare(`
-    SELECT s.*, e.tipo as categoria
-    FROM Svolgimenti s
-    JOIN Esercizi e ON s.esercizio_id = e.id
-    WHERE s.paziente_id = ?
-    ORDER BY s.data_esecuzione DESC
-  `).all(patientId);
-
-  return { info, esercizi, stats };
 }
 
 export async function updatePatientAction(patientId, utenteId, data) {
-  const { nome, email, patologia, descrizione } = data;
+
+  const { nome, cognome, email, patologia, descrizione } = data;
+
 
   const transaction = db.transaction(() => {
+
     // 1. Aggiorna i dati anagrafici nella tabella Utenti
+
     db.prepare(`
-      UPDATE Utenti 
-      SET nome = ?, email = ? 
-      WHERE id = ?
-    `).run(nome, email, utenteId);
+UPDATE Utenti
+SET Nome = ?, Cognome = ?, Email = ?
+WHERE ID = ?
+`).run(nome, cognome, email, utenteId);
 
     // 2. Aggiorna i dati clinici nella tabella Pazienti
+
     db.prepare(`
-      UPDATE Pazienti 
-      SET patologia = ?, descrizione = ? 
-      WHERE id = ?
-    `).run(patologia, descrizione, patientId);
+UPDATE Pazienti
+SET Patologia = ?, Descrizione = ?
+WHERE ID = ?
+
+`).run(patologia, descrizione, patientId);
+
   });
 
   try {
@@ -121,28 +89,55 @@ export async function updatePatientAction(patientId, utenteId, data) {
     revalidatePath(`/caregiver/pazienti/${patientId}`);
     return { success: true };
   } catch (error) {
+
     console.error("Errore aggiornamento:", error);
     if (error.message.includes("UNIQUE")) return { error: "Email già in uso." };
+
     return { error: "Errore durante il salvataggio." };
   }
 }
 
-// OGNI VOLTA CHE C'È UN ELIMINAZIONE NON DEVE ESSERE MAI FISICA MA SEMPRE LOGICA
-// CIOÈ DOPPIAMO AGGIORNARE UN CAMPO DEL TIPO "eliminato"/"attivo"
+export async function getDetailedPatientAction(patientId) {
+  // 1. Dati Anagrafici (Corretto IS NULL)
+  const info = db.prepare(`
+    SELECT p.*, u.Nome, u.Cognome, u.Email, u.Data_Creazione as data_iscr
+    FROM Pazienti p
+    LEFT JOIN Utenti u ON p.Utente_id = u.ID
+    WHERE p.ID = ? AND p.Data_Eliminazione IS NULL
+  `).get(patientId);
+
+  // 2. Esercizi Assegnati (Schema: Esercizio_id, Paziente_id)
+  const esercizi = db.prepare(`
+    SELECT e.Titolo, e.Tipo, a.Stato, a.Data_Assegnazione, a.ID as assegnazione_id
+    FROM Assegnazioni a
+    JOIN Esercizi e ON a.Esercizio_id = e.ID
+    WHERE a.Paziente_id = ?
+  `).all(patientId);
+
+  // 3. Statistiche (Svolgimenti)
+  const stats = db.prepare(`
+    SELECT s.*, e.Tipo as categoria, e.Titolo
+    FROM Svolgimenti s
+    JOIN Esercizi e ON s.Esercizio_id = e.ID
+    WHERE s.Paziente_id = ?
+    ORDER BY s.Data_Esecuzione DESC
+  `).all(patientId);
+
+  return { info, esercizi, stats };
+}
+
 export async function softDeletePatientAction(patientId) {
   try {
-    // Aggiorniamo lo stato invece di eliminare il record
+    // Il timestamp segna il momento della "morte logica" del record
     db.prepare(`
       UPDATE Pazienti 
-      SET attivo = 0 
-      WHERE id = ?
+      SET Data_Eliminazione = CURRENT_TIMESTAMP 
+      WHERE ID = ?
     `).run(patientId);
 
-    // Invalida la cache per mostrare la lista aggiornata
     revalidatePath("/caregiver/pazienti");
     return { success: true };
   } catch (error) {
-    console.error("Errore cancellazione logica:", error);
-    return { error: "Errore durante la disattivazione del paziente." };
+    return { error: "Errore durante la disattivazione." };
   }
 }

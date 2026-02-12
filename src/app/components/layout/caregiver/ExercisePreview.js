@@ -1,93 +1,121 @@
 "use client";
+import { useState, useEffect, useMemo } from "react";
 
 export default function ExercisePreview({ esercizio, onClose }) {
-    if (!esercizio) return null;
+  if (!esercizio) return null;
 
-    // Trasformiamo la stringa JSON in oggetto
-    const contenuto = JSON.parse(esercizio.contenuto_json);
+  const contenuto = useMemo(() => {
+    try {
+      return typeof esercizio.Contenuto_Json === 'string' 
+        ? JSON.parse(esercizio.Contenuto_Json) 
+        : esercizio.Contenuto_Json;
+    } catch (e) { return { items: [] }; }
+  }, [esercizio]);
 
-    return (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-white w-full max-w-2xl max-h-[85vh] rounded-[3rem] shadow-2xl overflow-hidden flex flex-col">
+  // --- LOGICA MEMORY ---
+  const [cards, setCards] = useState([]);
+  const [flipped, setFlipped] = useState([]); // Indici delle carte girate (max 2)
+  const [matched, setMatched] = useState([]); // Indici delle carte accoppiate con successo
 
-                {/* Header Modale */}
-                <div className="p-8 border-b border-slate-50 flex justify-between items-start bg-slate-50/50">
-                    <div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 bg-blue-100 px-3 py-1 rounded-full">
-                            {esercizio.tipo}
-                        </span>
-                        <h2 className="text-3xl font-black text-slate-800 mt-3">{esercizio.titolo}</h2>
-                        <p className="text-slate-500 mt-2 text-sm italic">{esercizio.descrizione}</p>
-                    </div>
-                    <button onClick={onClose} className="bg-white p-3 rounded-full shadow-sm hover:bg-slate-100 transition-colors text-2xl">
-                        ✕
-                    </button>
-                </div>
+  useEffect(() => {
+    if (esercizio.Tipo === 'memoria') {
+      // Raddoppiamo le tessere e mescoliamo
+      const pairCards = [...contenuto.items, ...contenuto.items]
+        .map((c, i) => ({ ...c, uniqueId: i }))
+        .sort(() => Math.random() - 0.5);
+      setCards(pairCards);
+    }
+  }, [contenuto, esercizio.Tipo]);
 
-                {/* Lista Quesiti */}
-                <div className="p-8 overflow-y-auto space-y-8 flex-1">
-                    {contenuto.domande.map((q, idx) => (
-                        <div key={idx} className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <span className="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center font-bold text-xs">
-                                    {idx + 1}
-                                </span>
-                                <h4 className="font-bold text-lg text-slate-700">{q.testo}</h4>
-                            </div>
+  const handleCardClick = (idx) => {
+    if (flipped.length === 2 || flipped.includes(idx) || matched.includes(idx)) return;
 
-                            {q.media && (
-                                <div className="my-4 rounded-3xl overflow-hidden border border-slate-100 bg-slate-50 flex justify-center p-4">
-                                    {q.media.tipo === 'image' && (
-                                        <img src={q.media.url} alt="Supporto visivo" className="max-h-64 rounded-xl shadow-md" />
-                                    )}
-                                    {q.media.tipo === 'audio' && (
-                                        <audio controls className="w-full max-w-md">
-                                            <source src={q.media.url} type="audio/mpeg" />
-                                        </audio>
-                                    )}
-                                    {q.media.tipo === 'video' && (
-                                        <video controls className="max-h-64 rounded-xl shadow-md">
-                                            <source src={q.media.url} type="video/mp4" />
-                                        </video>
-                                    )}
-                                </div>
-                            )}
+    const newFlipped = [...flipped, idx];
+    setFlipped(newFlipped);
 
-                            {/* Se è un esercizio di calcolo, mostra lo scenario */}
-                            {q.scenario && (
-                                <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 text-blue-800 text-sm">
-                                    <strong>Scenario:</strong> {q.scenario}
-                                </div>
-                            )}
+    if (newFlipped.length === 2) {
+      const [first, second] = newFlipped;
+      if (cards[first].id === cards[second].id) {
+        setMatched(prev => [...prev, first, second]);
+        setFlipped([]);
+      } else {
+        setTimeout(() => setFlipped([]), 1000);
+      }
+    }
+  };
 
-                            {/* Opzioni di risposta */}
-                            <div className="grid grid-cols-1 gap-2 ml-11">
-                                {q.opzioni.map((opt, oIdx) => (
-                                    <div
-                                        key={oIdx}
-                                        className={`p-3 rounded-xl border text-sm font-medium ${opt.isCorretta // Ora controlliamo la proprietà booleana
-                                            ? 'bg-green-50 border-green-200 text-green-700'
-                                            : 'bg-slate-50 border-slate-100 text-slate-500'
-                                            }`}
-                                    >
-                                        {opt.testo} {opt.isCorretta && <span className="ml-2">✅</span>}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Footer */}
-                <div className="p-6 bg-slate-50 border-t border-slate-100 text-center">
-                    <button
-                        onClick={onClose}
-                        className="px-10 py-3 bg-slate-800 text-white rounded-2xl font-bold hover:bg-slate-700 transition-all"
-                    >
-                        Chiudi Anteprima
-                    </button>
-                </div>
-            </div>
+  return (
+    <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[100] flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-white w-full max-w-4xl rounded-[4rem] shadow-2xl flex flex-col my-auto overflow-hidden">
+        
+        {/* Header */}
+        <div className="p-10 border-b flex justify-between items-center bg-slate-50/50">
+          <div>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 bg-blue-100 px-4 py-1.5 rounded-xl">
+              Anteprima {esercizio.Tipo}
+            </span>
+            <h2 className="text-3xl font-black text-slate-800 mt-2">{esercizio.Titolo}</h2>
+          </div>
+          <button onClick={onClose} className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-xl hover:bg-red-50 hover:text-red-500 transition-all">✕</button>
         </div>
-    );
+
+        {/* Area di Gioco */}
+        <div className="p-10 flex-1 overflow-y-auto">
+          {esercizio.Tipo === 'memoria' ? (
+            /* VISUALIZZAZIONE MEMORY */
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+              {cards.map((card, idx) => {
+                const isFlipped = flipped.includes(idx) || matched.includes(idx);
+                return (
+                  <div 
+                    key={idx} 
+                    onClick={() => handleCardClick(idx)}
+                    className="relative aspect-square cursor-pointer group"
+                    style={{ perspective: '1000px' }}
+                  >
+                    <div className={`relative w-full h-full transition-all duration-500 shadow-xl rounded-[2rem] transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
+                      {/* Dorso (Dietro) */}
+                      <div className="absolute inset-0 bg-blue-600 rounded-[2rem] flex items-center justify-center text-white text-4xl font-black backface-hidden shadow-inner">
+                        ?
+                      </div>
+                      {/* Fronte (Davanti) */}
+                      <div className="absolute inset-0 bg-white border-4 border-blue-50 rounded-[2rem] flex flex-col items-center justify-center rotate-y-180 backface-hidden overflow-hidden p-4">
+                         {card.media?.url ? (
+                           <img src={card.media.url} className="w-full h-full object-cover rounded-2xl" />
+                         ) : (
+                           <span className="text-blue-600 font-black text-center text-sm">{card.testo}</span>
+                         )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            /* VISUALIZZAZIONE QUIZ / CALCOLO (Vedi codice precedente) */
+            <div className="space-y-8">
+               {contenuto.items.map((q, idx) => (
+                 <div key={idx} className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100">
+                    <h4 className="font-bold text-lg mb-4">{q.testo}</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {q.opzioni.map((opt, oIdx) => (
+                        <div key={oIdx} className={`p-4 rounded-xl border-2 font-bold ${opt.isCorretta ? 'bg-green-50 border-green-200 text-green-700' : 'bg-white border-slate-100 text-slate-400'}`}>
+                          {opt.testo} {opt.isCorretta && '✓'}
+                        </div>
+                      ))}
+                    </div>
+                 </div>
+               ))}
+            </div>
+          )}
+        </div>
+
+        <div className="p-8 bg-slate-50 border-t flex justify-center">
+           <button onClick={onClose} className="px-12 py-4 bg-slate-900 text-white rounded-[2rem] font-black text-xs uppercase tracking-widest shadow-xl">
+             Esci dall'anteprima
+           </button>
+        </div>
+      </div>
+    </div>
+  );
 }

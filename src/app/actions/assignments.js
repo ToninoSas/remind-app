@@ -6,8 +6,8 @@ export async function assignExerciseAction(pazienteId, esercizioId) {
   try {
     // Verifichiamo se è già assegnato e non ancora svolto
     const exists = db.prepare(`
-      SELECT id FROM Assegnazioni 
-      WHERE paziente_id = ? AND esercizio_id = ? AND stato = 'da_svolgere'
+      SELECT ID FROM Assegnazioni 
+      WHERE Paziente_id = ? AND Esercizio_id = ? AND Stato = 'da_svolgere'
     `).get(pazienteId, esercizioId);
 
     if (exists) {
@@ -30,7 +30,7 @@ export async function assignExerciseAction(pazienteId, esercizioId) {
 export async function unassignExerciseAction(assignmentId, patientId) {
   try {
     // Eliminiamo il record specifico dell'assegnazione
-    db.prepare("DELETE FROM Assegnazioni WHERE id = ?").run(assignmentId);
+    db.prepare("DELETE FROM Assegnazioni WHERE ID = ?").run(assignmentId);
 
     // Aggiorniamo la cache della pagina del paziente
     revalidatePath(`/caregiver/pazienti/${patientId}`);

@@ -22,7 +22,7 @@ export default function AddPatientForm({ onCancel }) {
       return;
     }
     setLoading(true);
-    const result = await createPatientAction(formData, user.id);
+    const result = await createPatientAction(formData, user.ID);
     
     if (result.success) {
       onCancel(); 

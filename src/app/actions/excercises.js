@@ -1,74 +1,101 @@
-// src/app/actions/exercises.js
 "use server";
 import db from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
-export async function createExerciseAction(formData, creatoreId) {
-  const { titolo, tipo, descrizione, difficolta, contenuto } = formData;
+/**
+ * Crea un nuovo esercizio partendo dall'ID Utente del creatore
+ */
+export async function createExerciseAction(payload, utenteId) {
+  const { titolo, tipo, descrizione, difficolta, contenuto } = payload;
 
   try {
+    // 1. Dobbiamo trovare il Caregiver_id corrispondente all'utente loggato
+    const caregiver = db.prepare("SELECT ID FROM Caregivers WHERE Utente_id = ?").get(utenteId);
+    
+    if (!caregiver) {
+      return { error: "Profilo caregiver non trovato." };
+    }
+
+    // 2. Inserimento con nomi colonne corretti
     const res = db.prepare(`
-      INSERT INTO Esercizi (tipo, titolo, descrizione, livello_difficolta, contenuto_json, data_creazione, creatore_id)
-      VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?)
+      INSERT INTO Esercizi (Tipo, Titolo, Descrizione, Livello_Difficolta, Contenuto_Json, Caregiver_id)
+      VALUES (?, ?, ?, ?, ?, ?)
     `).run(
       tipo, 
       titolo, 
       descrizione, 
-      difficolta, 
-      JSON.stringify(contenuto), // Trasformiamo l'oggetto in stringa per il DB
-      creatoreId
+      parseInt(difficolta), 
+      JSON.stringify(contenuto), 
+      caregiver.ID
     );
 
     revalidatePath("/caregiver/esercizi");
     return { success: true, id: res.lastInsertRowid };
   } catch (error) {
-    console.error("Errore creazione esercizio:", error);
-    return { error: "Impossibile salvare l'esercizio." };
+    console.error("ERRORE SQL (Creazione):", error.message);
+    return { error: "Errore durante il salvataggio dell'esercizio." };
   }
 }
 
-export async function getExercisesAction(creatoreId) {
+/**
+ * Recupera tutti gli esercizi di un determinato Caregiver (tramite Utente_id)
+ */
+export async function getExercisesAction(utenteId) {
   try {
+    // Usiamo un JOIN per filtrare gli esercizi tramite l'Utente_id del caregiver
     return db.prepare(`
-      SELECT * FROM Esercizi 
-      WHERE creatore_id = ? AND attivo = 1
-      ORDER BY data_creazione DESC
-    `).all(creatoreId);
+      SELECT e.* FROM Esercizi e
+      JOIN Caregivers c ON e.Caregiver_id = c.ID
+      WHERE c.Utente_id = ?
+      ORDER BY e.Data_Creazione DESC
+    `).all(utenteId);
   } catch (error) {
-    console.error("Errore recupero esercizi:", error);
+    console.error("ERRORE SQL (Recupero):", error.message);
     return [];
   }
 }
 
+/**
+ * Aggiorna un esercizio esistente
+ */
 export async function updateExerciseAction(id, data) {
+  const { titolo, tipo, descrizione, difficolta, contenuto } = data;
+
   try {
     db.prepare(`
       UPDATE Esercizi 
-      SET tipo = ?, titolo = ?, descrizione = ?, livello_difficolta = ?, contenuto_json = ?
-      WHERE id = ?
+      SET Tipo = ?, Titolo = ?, Descrizione = ?, Livello_Difficolta = ?, Contenuto_Json = ?
+      WHERE ID = ?
     `).run(
-      data.tipo, 
-      data.titolo, 
-      data.descrizione, 
-      data.difficolta, 
-      JSON.stringify(data.contenuto), 
+      tipo, 
+      titolo, 
+      descrizione, 
+      parseInt(difficolta), 
+      JSON.stringify(contenuto), 
       id
     );
 
     revalidatePath("/caregiver/esercizi");
     return { success: true };
   } catch (error) {
-    console.error("Errore aggiornamento esercizio:", error.message);
-    return { error: error.message };
+    console.error("ERRORE SQL (Update):", error.message);
+    return { error: "Impossibile aggiornare l'esercizio." };
   }
 }
 
-export async function softDeleteExerciseAction(id) {
+/**
+ * Elimina un esercizio fisicamente dal database
+ */
+export async function deleteExerciseAction(id) {
   try {
-    db.prepare("UPDATE Esercizi SET attivo = 0 WHERE id = ?").run(id);
+    // Nota: l'eliminazione qui è fisica perché è un elemento della libreria, 
+    // non un dato clinico del paziente.
+    db.prepare("DELETE FROM Esercizi WHERE ID = ?").run(id);
+    
     revalidatePath("/caregiver/esercizi");
     return { success: true };
   } catch (error) {
-    return { error: "Errore durante l'eliminazione dell'esercizio." };
+    console.error("ERRORE SQL (Delete):", error.message);
+    return { error: "Errore durante l'eliminazione." };
   }
 }

@@ -19,6 +19,7 @@ export default function LoginPage() {
         try {
             await login(email, password);
         } catch (err) {
+            console.log(err);
             setError("Email o password non corretti. Riprova.");
         } finally {
             setLoading(false);

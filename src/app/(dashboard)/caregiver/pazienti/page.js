@@ -14,8 +14,8 @@ export default function PazientiPage() {
   // Caricamento dati
   useEffect(() => {
     async function loadData() {
-      if (user?.id) {
-        const data = await getPatientsAction(user.id);
+      if (user?.ID) {
+        const data = await getPatientsAction(user.ID);
         setPazienti(data);
         setLoading(false);
       }
@@ -51,27 +51,31 @@ export default function PazientiPage() {
           {pazienti.length > 0 ?
             (
               pazienti.map((p) => (
-                <div key={p.id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col">
+                <div key={p.ID} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col">
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-black">
-                      {p.nome_completo?.[0]}
+                    <div className="w-12 h-12 shrink-0 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-black">
+                      {p.Nome?.[0]}{p.Cognome?.[0]}
                     </div>
+
+                    {/* Testo a fianco */}
                     <div>
-                      <h3 className="font-bold">{p.nome_completo}</h3>
+                      <h3 className="font-bold text-slate-800 leading-tight">
+                        {p.Nome} {p.Cognome}
+                      </h3>
                       <span className="text-[10px] bg-slate-100 px-2 py-1 rounded text-slate-500 font-bold uppercase">
-                        {p.patologia}
+                        {p.Patologia}
                       </span>
                     </div>
                   </div>
 
                   {/* DESCRIZIONE: Mostriamo solo un'anteprima */}
                   <p className="text-sm text-slate-500 mb-6 line-clamp-2 italic">
-                    "{p.descrizione || "Nessuna nota presente"}"
+                    "{p.Descrizione || "Nessuna nota presente"}"
                   </p>
 
                   {/* LINK ALLA CARTELLA CLINICA */}
                   <Link
-                    href={`/caregiver/pazienti/${p.id}`}
+                    href={`/caregiver/pazienti/${p.ID}`}
                     className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold text-center hover:bg-blue-600 transition-colors mt-auto"
                   >
                     Apri Cartella

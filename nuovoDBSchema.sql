@@ -1,30 +1,29 @@
-const Database = require('better-sqlite3');
-const db = new Database('database.db', { verbose: console.log });
-
-try{
-    db.exec(`
 BEGIN TRANSACTION;
 
-CREATE TABLE IF NOT EXISTS "Utenti" (
+DROP TABLE IF EXISTS "Utenti";
+CREATE TABLE "Utenti" (
 	"ID"	INTEGER,
 	"Nome"	TEXT NOT NULL,
 	"Cognome"	TEXT,
 	"Email"	TEXT NOT NULL UNIQUE,
 	"Password_hash"	TEXT NOT NULL,
 	"Data_Creazione"	DATETIME DEFAULT CURRENT_TIMESTAMP,
+	"Ruolo" TEXT CHECK("Ruolo" IN ('caregiver', 'paziente')),
 	PRIMARY KEY("ID" AUTOINCREMENT)
 );
 
-CREATE TABLE IF NOT EXISTS "Caregivers" (
+DROP TABLE IF EXISTS "Caregivers";
+CREATE TABLE "Caregivers" (
 	"ID"	INTEGER NOT NULL,
 	"Tipologia"	TEXT NOT NULL,
 	"Utente_id"	INTEGER NOT NULL,
 	PRIMARY KEY("ID"),
-	CONSTRAINT "check_Tipologia" CHECK("Tipologia" IN ('Familiare','Professionista'))
+	CONSTRAINT "check_Tipologia" CHECK("Tipologia" IN ("Familiare", "Professionista")),
 	FOREIGN KEY("Utente_id") REFERENCES "Utenti"("ID") ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS "Pazienti" (
+DROP TABLE IF EXISTS "Pazienti";
+CREATE TABLE "Pazienti" (
 	"ID"	INTEGER,
 	-- DA NOTIFICARE
 	"Patologia"	TEXT,
@@ -37,7 +36,8 @@ CREATE TABLE IF NOT EXISTS "Pazienti" (
 	FOREIGN KEY("Utente_id") REFERENCES "Utenti"("ID") ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS "Esercizi" (
+DROP TABLE IF EXISTS "Esercizi";
+CREATE TABLE "Esercizi" (
 	"ID"	INTEGER,
 	"Tipo"	TEXT NOT NULL CHECK("tipo" IN ('memoria', 'calcolo', 'quiz')),
 	"Titolo"	TEXT NOT NULL,
@@ -48,8 +48,9 @@ CREATE TABLE IF NOT EXISTS "Esercizi" (
 	"Caregiver_id"	INTEGER NOT NULL,
 	PRIMARY KEY("ID" AUTOINCREMENT),
 	FOREIGN KEY("Caregiver_id") REFERENCES "Caregivers"("ID") ON DELETE CASCADE
-);;
-CREATE TABLE IF NOT EXISTS "Memory_boxs" (
+);
+DROP TABLE IF EXISTS "Memory_boxs";
+CREATE TABLE "Memory_boxs" (
 	"ID"	INTEGER,
 	"Titolo"	TEXT NOT NULL,
 	"Descrizione"	TEXT,
@@ -61,7 +62,8 @@ CREATE TABLE IF NOT EXISTS "Memory_boxs" (
 	FOREIGN KEY("Paziente_id") REFERENCES "Pazienti"("id"),
 	FOREIGN KEY ("Caregiver_id") REFERENCES "Caregivers"("ID") 
 );
-CREATE TABLE IF NOT EXISTS "Memory_items" (
+DROP TABLE IF EXISTS "Memory_items";
+CREATE TABLE "Memory_items" (
 	"ID"	INTEGER,
 	"Tipo"	TEXT NOT NULL CHECK("Tipo" IN ('audio', 'foto', 'video')),
 	"Url"	TEXT,
@@ -74,7 +76,10 @@ CREATE TABLE IF NOT EXISTS "Memory_items" (
 	FOREIGN KEY("Box_id") REFERENCES "Memory_boxs"("ID") ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS "Assegnazioni"(
+
+
+DROP TABLE IF EXISTS "Assegnazioni";
+CREATE TABLE "Assegnazioni" (
 	"ID"	INTEGER,
 	"Paziente_id"	INTEGER NOT NULL,
 	"Esercizio_id"	INTEGER NOT NULL,
@@ -87,7 +92,8 @@ CREATE TABLE IF NOT EXISTS "Assegnazioni"(
 	FOREIGN KEY("Paziente_id") REFERENCES "Pazienti"("ID") ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS "Svolgimenti"(
+DROP TABLE IF EXISTS "Svolgimenti";
+CREATE TABLE "Svolgimenti" (
 	"ID"	INTEGER,
 	"Paziente_id"	INTEGER NOT NULL,
 	"Esercizio_id"	INTEGER NOT NULL,
@@ -105,10 +111,3 @@ CREATE TABLE IF NOT EXISTS "Svolgimenti"(
 );
 
 COMMIT;
-
-`);
-} catch (err){
-    console.error(err.message)
-}
-
-export default db;

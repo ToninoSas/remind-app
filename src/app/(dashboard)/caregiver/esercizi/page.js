@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/context/auth-context";
-import { getExercisesAction, softDeleteExerciseAction } from "@/app/actions/excercises";
+import { getExercisesAction, deleteExerciseAction } from "@/app/actions/excercises";
 import CreateExerciseForm from "@/app/components/layout/caregiver/CreateExcerciseForm";
 import ExercisePreview from "@/app/components/layout/caregiver/ExercisePreview";
 
@@ -22,15 +22,15 @@ export default function EserciziPage() {
   // senza useCallback ogni volta che renderizzo la pagina creo una nuova funziona
   // con useCallback invece non ne crea una nuova e ti restituisce quella che aveva
   const loadExercises = useCallback(async () => {
-    if (!user?.id) return;
+    if (!user?.ID) return;
     // imposto il caricamento
     setLoading(true); 
     // prendo gli esercizi
-    const data = await getExercisesAction(user.id);
+    const data = await getExercisesAction(user.ID);
     setEsercizi(data);
     setLoading(false);
     // una volta che ho gli esercizi caricati il caricamento è finito
-  }, [user?.id]);
+  }, [user?.ID]);
   /*
   FUNZIONAMENTO useEffect
   ha una lista delle dipendenze
@@ -61,7 +61,7 @@ export default function EserciziPage() {
   };
 
   const handleDelete = async (id) => {
-    const res = await softDeleteExerciseAction(id);
+    const res = await deleteExerciseAction(id);
     if (res.success) {
       setIsDeletingId(null);
       loadExercises(); // Ricarica la lista
@@ -72,7 +72,7 @@ export default function EserciziPage() {
 
   // Logica di filtraggio
   const filteredEsercizi = esercizi.filter(ex =>
-    filter === "tutti" || ex.tipo === filter
+    filter === "tutti" || ex.Tipo === filter
   );
 
   // Helper per icone e colori
@@ -93,55 +93,52 @@ export default function EserciziPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8 pb-12">
 
-      {/* VISTA: FORM (CREAZIONE O MODIFICA) */}
       {view === "form" ? (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
           <button
             onClick={() => setView("list")}
-            className="mb-8 flex items-center gap-2 text-slate-400 font-bold hover:text-blue-600 transition-colors"
+            className="mb-8 flex items-center gap-2 text-slate-400 font-black text-xs uppercase tracking-widest hover:text-blue-600 transition-colors"
           >
-            <span>←</span> Torna alla Libreria
+            <span className="text-lg">←</span> Torna alla Libreria
           </button>
 
           <CreateExerciseForm
             onSave={handleCloseForm}
             initialData={selectedExercise}
-            key={selectedExercise?.id || "nuovo-esercizio"}
+            // Usiamo ex.ID maiuscolo per la chiave
+            key={selectedExercise?.ID || "nuovo-esercizio"}
           />
         </div>
       ) : (
-
-        /* VISTA: LISTA ESERCIZI */
         <div className="animate-in fade-in duration-500">
-
-          {/* Header Dashboard */}
+          {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
             <div>
               <h1 className="text-4xl font-black text-slate-800 tracking-tight italic">
                 Libreria Esercizi
               </h1>
               <p className="text-slate-500 font-medium">
-                Sviluppa e personalizza le attività per il supporto cognitivo.
+                Gestisci le attività cognitive personalizzate.
               </p>
             </div>
 
             <button
               onClick={handleOpenCreate}
-              className="bg-blue-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl shadow-blue-100 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all"
+              className="bg-blue-600 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-100 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all"
             >
               + Nuovo Esercizio
             </button>
           </div>
 
-          {/* Barra dei Filtri */}
+          {/* Filtri */}
           <div className="flex gap-3 mb-10 overflow-x-auto pb-2 scrollbar-hide">
             {['tutti', 'memoria', 'calcolo', 'quiz'].map((t) => (
               <button
                 key={t}
                 onClick={() => setFilter(t)}
-                className={`px-6 py-2 rounded-full font-bold text-sm capitalize whitespace-nowrap transition-all ${filter === t
+                className={`px-6 py-2 rounded-full font-black text-[10px] uppercase tracking-widest transition-all ${filter === t
                   ? 'bg-slate-800 text-white shadow-lg'
                   : 'bg-white text-slate-400 border border-slate-200 hover:border-slate-300'
                   }`}
@@ -153,76 +150,76 @@ export default function EserciziPage() {
 
           {/* Griglia Card */}
           {filteredEsercizi.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredEsercizi.map((ex) => (
                 <div
-                  key={ex.id}
-                  className="bg-white p-7 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all group flex flex-col h-full"
+                  key={ex.ID}
+                  className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all group flex flex-col h-full cursor-pointer"
                   onClick={() => setPreviewExercise(ex)}
                 >
-                  <div className="flex justify-between items-start mb-4">
-                    <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg ${getBadgeStyle(ex.tipo)}`}>
-                      {ex.tipo}
+                  <div className="flex justify-between items-start mb-6">
+                    <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl ${getBadgeStyle(ex.Tipo)}`}>
+                      {ex.Tipo}
                     </span>
                     <div className="flex gap-1">
                       {[...Array(5)].map((_, i) => (
                         <div
                           key={i}
-                          className={`w-1.5 h-1.5 rounded-full ${i < ex.livello_difficolta ? 'bg-orange-400' : 'bg-slate-100'}`}
+                          className={`w-1.5 h-1.5 rounded-full ${i < ex.Livello_Difficolta ? 'bg-orange-400' : 'bg-slate-100'}`}
                         />
                       ))}
                     </div>
                   </div>
 
-                  <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">
-                    {ex.titolo}
+                  <h3 className="text-2xl font-black text-slate-800 mb-3 group-hover:text-blue-600 transition-colors leading-tight">
+                    {ex.Titolo}
                   </h3>
 
-                  <p className="text-sm text-slate-500 line-clamp-3 mb-6 flex-grow leading-relaxed">
-                    {ex.descrizione || "Nessuna descrizione clinica inserita per questo esercizio."}
+                  <p className="text-sm text-slate-500 line-clamp-3 mb-8 flex-grow leading-relaxed italic">
+                    "{ex.Descrizione || "Nessuna specifica clinica inserita."}"
                   </p>
 
-                  <div className="pt-5 border-t border-slate-50 flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
-                    <span className="text-[10px] font-bold text-slate-300 uppercase">ID: #{ex.id}</span>
+                  <div className="pt-6 border-t border-slate-50 flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
+                    <span className="text-[10px] font-black text-slate-300 uppercase tracking-tighter">REF: #{ex.ID}</span>
                     <div className="flex gap-4">
                       <button
                         onClick={() => handleOpenEdit(ex)}
-                        className="flex items-center gap-2 text-sm font-black text-blue-600 hover:text-blue-800 transition-colors"
+                        className="text-[10px] font-black text-blue-600 hover:underline tracking-widest"
                       >
-                        ✏️ MODIFICA
+                        MODIFICA
                       </button>
 
                       <button
-                        onClick={() => setIsDeletingId(ex.id)}
-                        className="flex items-center gap-2 text-sm font-black text-red-400 hover:text-red-600 transition-colors"
+                        onClick={() => setIsDeletingId(ex.ID)}
+                        className="text-[10px] font-black text-red-400 hover:text-red-600 tracking-widest"
                       >
-                        🗑️ ELIMINA
+                        ELIMINA
                       </button>
                     </div>
                   </div>
-
-
                 </div>
               ))}
             </div>
           ) : (
             /* Stato Vuoto */
-            <div className="text-center py-24 bg-white rounded-[3rem] border-2 border-dashed border-slate-100">
-              <div className="text-6xl mb-4">🧩</div>
-              <h3 className="text-xl font-bold text-slate-800 mb-2">Ancora nessun esercizio</h3>
-              <p className="text-slate-400 max-w-xs mx-auto mb-8">
-                Inizia a popolare la tua libreria creando il primo esercizio personalizzato.
+            <div className="text-center py-24 bg-slate-50 rounded-[4rem] border-2 border-dashed border-slate-200">
+              <div className="text-5xl mb-6">🧩</div>
+              <h3 className="text-xl font-black text-slate-800 mb-2">Libreria Vuota</h3>
+              <p className="text-slate-400 max-w-xs mx-auto mb-8 font-medium">
+                Non hai ancora creato esercizi. Inizia ora per assegnarli ai tuoi pazienti.
               </p>
               <button
                 onClick={handleOpenCreate}
-                className="text-blue-600 font-bold hover:underline"
+                className="bg-white text-blue-600 px-8 py-3 rounded-2xl font-black text-xs border border-blue-100 shadow-sm hover:shadow-md transition-all"
               >
-                Clicca qui per iniziare
+                CREA IL PRIMO ESERCIZIO
               </button>
             </div>
           )}
         </div>
       )}
+
+      {/* Modali */}
       {previewExercise && (
         <ExercisePreview
           esercizio={previewExercise}
@@ -231,22 +228,22 @@ export default function EserciziPage() {
       )}
 
       {isDeletingId && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-          <div className="bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center animate-in zoom-in duration-200">
-            <h3 className="text-xl font-black text-slate-800 mb-2">Eliminare l'esercizio?</h3>
-            <p className="text-slate-500 text-sm mb-8">
-              Verrà rimosso dalla libreria ma i risultati passati dei pazienti verranno conservati.
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+          <div className="bg-white p-10 rounded-[3rem] shadow-2xl max-w-sm w-full text-center animate-in zoom-in duration-300">
+            <h3 className="text-2xl font-black text-slate-800 mb-2">Eliminare?</h3>
+            <p className="text-slate-500 text-sm font-medium mb-10 leading-relaxed italic">
+              L'esercizio verrà rimosso permanentemente dalla libreria.
             </p>
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               <button
                 onClick={() => setIsDeletingId(null)}
-                className="flex-1 py-3 font-bold text-slate-400 hover:bg-slate-50 rounded-xl"
+                className="flex-1 py-4 font-black text-slate-300 uppercase text-[10px] tracking-widest"
               >
                 Annulla
               </button>
               <button
                 onClick={() => handleDelete(isDeletingId)}
-                className="flex-1 py-3 bg-red-600 text-white font-bold rounded-xl shadow-lg"
+                className="flex-1 py-4 bg-red-600 text-white font-black rounded-2xl text-[10px] uppercase tracking-widest shadow-lg shadow-red-100"
               >
                 Elimina
               </button>
@@ -255,7 +252,5 @@ export default function EserciziPage() {
         </div>
       )}
     </div>
-
-
   );
 }
