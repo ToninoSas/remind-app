@@ -1,19 +1,19 @@
 // Navigazione centralizzata per facilitare modifiche future
 export const getNavigation = (ruolo) => {
-  const common = [
-    { name: 'Box dei ricordi', href: '/box-dei-ricordi', icon: '📦' },
+
+  const caregiverNav = [
+    { name: "Pazienti", href: "/pazienti", icon: "👥" },
+    { name: "Esercizi", href: "/esercizi", icon: "🎮" },,
+  ];
+
+  const pazienteNav = [
+    { name: "I Miei Esercizi", href: "/myapp/esercizi", icon: "🎮" },
+    { name: "I Miei Ricordi", href: "/myapp/ricordi", icon: "📸" },
   ];
 
   if (ruolo === 'caregiver') {
-    return [
-      { name: 'Pazienti', href: '/caregiver/pazienti', icon: '👥' },
-      { name: 'Esercizi', href: '/caregiver/esercizi', icon: '🎮' },
-      ...common,
-    ];
+    return caregiverNav
   }
 
-  return [
-    { name: 'I Miei Esercizi', href: '/esercizi', icon: '🎮' },
-    ...common,
-  ];
+  return pazienteNav
 };

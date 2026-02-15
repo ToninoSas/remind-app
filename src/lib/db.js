@@ -10,8 +10,9 @@ CREATE TABLE IF NOT EXISTS "Utenti" (
 	"Nome"	TEXT NOT NULL,
 	"Cognome"	TEXT,
 	"Email"	TEXT NOT NULL UNIQUE,
-	"Password_hash"	TEXT NOT NULL,
+	"Password_Hash"	TEXT NOT NULL,
 	"Data_Creazione"	DATETIME DEFAULT CURRENT_TIMESTAMP,
+	"Ruolo" TEXT CHECK("Ruolo" IN ('caregiver', 'paziente')),
 	PRIMARY KEY("ID" AUTOINCREMENT)
 );
 
@@ -20,7 +21,7 @@ CREATE TABLE IF NOT EXISTS "Caregivers" (
 	"Tipologia"	TEXT NOT NULL,
 	"Utente_id"	INTEGER NOT NULL,
 	PRIMARY KEY("ID"),
-	CONSTRAINT "check_Tipologia" CHECK("Tipologia" IN ('Familiare','Professionista'))
+	CONSTRAINT "check_Tipologia" CHECK("Tipologia" IN ('Familiare', 'Professionista')),
 	FOREIGN KEY("Utente_id") REFERENCES "Utenti"("ID") ON DELETE CASCADE
 );
 
@@ -48,7 +49,7 @@ CREATE TABLE IF NOT EXISTS "Esercizi" (
 	"Caregiver_id"	INTEGER NOT NULL,
 	PRIMARY KEY("ID" AUTOINCREMENT),
 	FOREIGN KEY("Caregiver_id") REFERENCES "Caregivers"("ID") ON DELETE CASCADE
-);;
+);
 CREATE TABLE IF NOT EXISTS "Memory_boxs" (
 	"ID"	INTEGER,
 	"Titolo"	TEXT NOT NULL,
@@ -58,7 +59,7 @@ CREATE TABLE IF NOT EXISTS "Memory_boxs" (
 	"Paziente_id"	INTEGER NOT NULL,
 	"Caregiver_id" INTEGER NOT NULL,
 	PRIMARY KEY("ID" AUTOINCREMENT),
-	FOREIGN KEY("Paziente_id") REFERENCES "Pazienti"("id"),
+	FOREIGN KEY("Paziente_id") REFERENCES "Pazienti"("ID"),
 	FOREIGN KEY ("Caregiver_id") REFERENCES "Caregivers"("ID") 
 );
 CREATE TABLE IF NOT EXISTS "Memory_items" (
@@ -74,7 +75,7 @@ CREATE TABLE IF NOT EXISTS "Memory_items" (
 	FOREIGN KEY("Box_id") REFERENCES "Memory_boxs"("ID") ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS "Assegnazioni"(
+CREATE TABLE IF NOT EXISTS "Assegnazioni" (
 	"ID"	INTEGER,
 	"Paziente_id"	INTEGER NOT NULL,
 	"Esercizio_id"	INTEGER NOT NULL,
@@ -87,7 +88,7 @@ CREATE TABLE IF NOT EXISTS "Assegnazioni"(
 	FOREIGN KEY("Paziente_id") REFERENCES "Pazienti"("ID") ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS "Svolgimenti"(
+CREATE TABLE IF NOT EXISTS "Svolgimenti" (
 	"ID"	INTEGER,
 	"Paziente_id"	INTEGER NOT NULL,
 	"Esercizio_id"	INTEGER NOT NULL,
@@ -105,7 +106,6 @@ CREATE TABLE IF NOT EXISTS "Svolgimenti"(
 );
 
 COMMIT;
-
 `);
 } catch (err){
     console.error(err.message)

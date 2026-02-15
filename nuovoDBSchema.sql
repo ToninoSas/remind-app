@@ -1,7 +1,6 @@
 BEGIN TRANSACTION;
 
-DROP TABLE IF EXISTS "Utenti";
-CREATE TABLE "Utenti" (
+CREATE TABLE IF NOT EXISTS "Utenti" (
 	"ID"	INTEGER,
 	"Nome"	TEXT NOT NULL,
 	"Cognome"	TEXT,
@@ -12,18 +11,16 @@ CREATE TABLE "Utenti" (
 	PRIMARY KEY("ID" AUTOINCREMENT)
 );
 
-DROP TABLE IF EXISTS "Caregivers";
-CREATE TABLE "Caregivers" (
+CREATE TABLE IF NOT EXISTS "Caregivers" (
 	"ID"	INTEGER NOT NULL,
 	"Tipologia"	TEXT NOT NULL,
 	"Utente_id"	INTEGER NOT NULL,
 	PRIMARY KEY("ID"),
-	CONSTRAINT "check_Tipologia" CHECK("Tipologia" IN ("Familiare", "Professionista")),
+	CONSTRAINT "check_Tipologia" CHECK("Tipologia" IN ('Familiare', 'Professionista')),
 	FOREIGN KEY("Utente_id") REFERENCES "Utenti"("ID") ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS "Pazienti";
-CREATE TABLE "Pazienti" (
+CREATE TABLE IF NOT EXISTS "Pazienti" (
 	"ID"	INTEGER,
 	-- DA NOTIFICARE
 	"Patologia"	TEXT,
@@ -36,8 +33,7 @@ CREATE TABLE "Pazienti" (
 	FOREIGN KEY("Utente_id") REFERENCES "Utenti"("ID") ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS "Esercizi";
-CREATE TABLE "Esercizi" (
+CREATE TABLE IF NOT EXISTS "Esercizi" (
 	"ID"	INTEGER,
 	"Tipo"	TEXT NOT NULL CHECK("tipo" IN ('memoria', 'calcolo', 'quiz')),
 	"Titolo"	TEXT NOT NULL,
@@ -49,8 +45,7 @@ CREATE TABLE "Esercizi" (
 	PRIMARY KEY("ID" AUTOINCREMENT),
 	FOREIGN KEY("Caregiver_id") REFERENCES "Caregivers"("ID") ON DELETE CASCADE
 );
-DROP TABLE IF EXISTS "Memory_boxs";
-CREATE TABLE "Memory_boxs" (
+CREATE TABLE IF NOT EXISTS "Memory_boxs" (
 	"ID"	INTEGER,
 	"Titolo"	TEXT NOT NULL,
 	"Descrizione"	TEXT,
@@ -59,11 +54,10 @@ CREATE TABLE "Memory_boxs" (
 	"Paziente_id"	INTEGER NOT NULL,
 	"Caregiver_id" INTEGER NOT NULL,
 	PRIMARY KEY("ID" AUTOINCREMENT),
-	FOREIGN KEY("Paziente_id") REFERENCES "Pazienti"("id"),
+	FOREIGN KEY("Paziente_id") REFERENCES "Pazienti"("ID"),
 	FOREIGN KEY ("Caregiver_id") REFERENCES "Caregivers"("ID") 
 );
-DROP TABLE IF EXISTS "Memory_items";
-CREATE TABLE "Memory_items" (
+CREATE TABLE IF NOT EXISTS "Memory_items" (
 	"ID"	INTEGER,
 	"Tipo"	TEXT NOT NULL CHECK("Tipo" IN ('audio', 'foto', 'video')),
 	"Url"	TEXT,
@@ -76,10 +70,7 @@ CREATE TABLE "Memory_items" (
 	FOREIGN KEY("Box_id") REFERENCES "Memory_boxs"("ID") ON DELETE CASCADE
 );
 
-
-
-DROP TABLE IF EXISTS "Assegnazioni";
-CREATE TABLE "Assegnazioni" (
+CREATE TABLE IF NOT EXISTS "Assegnazioni" (
 	"ID"	INTEGER,
 	"Paziente_id"	INTEGER NOT NULL,
 	"Esercizio_id"	INTEGER NOT NULL,
@@ -92,8 +83,7 @@ CREATE TABLE "Assegnazioni" (
 	FOREIGN KEY("Paziente_id") REFERENCES "Pazienti"("ID") ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS "Svolgimenti";
-CREATE TABLE "Svolgimenti" (
+CREATE TABLE IF NOT EXISTS "Svolgimenti" (
 	"ID"	INTEGER,
 	"Paziente_id"	INTEGER NOT NULL,
 	"Esercizio_id"	INTEGER NOT NULL,

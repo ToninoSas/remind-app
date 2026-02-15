@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { loginAction, logoutAction } from "@/app/actions/auth";
+import { loginAction, logoutAction } from "@/actions/auth";
 
 const AuthContext = createContext();
 
@@ -26,9 +26,9 @@ export function AuthProvider({ children }) {
     sessionStorage.setItem("user", JSON.stringify(userData));
 
     if (userData.ruolo === "paziente") {
-      router.push("/paziente/dashboard");
+      router.push("/myapp/esercizi");
     } else {
-      router.push("/caregiver/pazienti");
+      router.push("/pazienti");
     }
   };
 

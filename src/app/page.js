@@ -31,7 +31,7 @@ export default function WelcomePage() {
             <span className="text-blue-600 italic">giorno dopo giorno.</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-slate-700 max-w-2xl mx-auto leading-relaxed">
             La piattaforma dedicata a caregiver e pazienti per la riabilitazione cognitiva personalizzata. Esercizi mirati, monitoraggio dei progressi e semplicità d'uso.
           </p>
 
@@ -55,7 +55,7 @@ export default function WelcomePage() {
       </main>
 
       {/* Footer Minimal */}
-      <footer className="p-8 text-center text-slate-400 text-sm font-medium">
+      <footer className="p-8 text-center text-slate-600 text-sm font-medium">
         © 2026 Remind — Tecnologia al servizio dell'assistenza.
       </footer>
 
