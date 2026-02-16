@@ -27,7 +27,6 @@ CREATE TABLE IF NOT EXISTS "Caregivers" (
 
 CREATE TABLE IF NOT EXISTS "Pazienti" (
 	"ID"	INTEGER,
-	-- DA NOTIFICARE
 	"Patologia"	TEXT,
 	"Descrizione"	TEXT,
 	"Caregiver_id"	INTEGER NOT NULL,
@@ -58,6 +57,7 @@ CREATE TABLE IF NOT EXISTS "Memory_boxs" (
 	"Data_Creazione"	DATETIME DEFAULT CURRENT_TIMESTAMP,
 	"Paziente_id"	INTEGER NOT NULL,
 	"Caregiver_id" INTEGER NOT NULL,
+	"Data_Eliminazione"	DATETIME DEFAULT NULL,
 	PRIMARY KEY("ID" AUTOINCREMENT),
 	FOREIGN KEY("Paziente_id") REFERENCES "Pazienti"("ID"),
 	FOREIGN KEY ("Caregiver_id") REFERENCES "Caregivers"("ID") 
@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS "Memory_items" (
 	"Testo"	TEXT,
 	"Datazione"	DATETIME DEFAULT NULL,
 	"Luogo"	TEXT,
+	"Data_Eliminazione"	DATETIME DEFAULT NULL,
 	"Box_id"	INTEGER NOT NULL,
 	PRIMARY KEY("ID" AUTOINCREMENT),
 	FOREIGN KEY("Box_id") REFERENCES "Memory_boxs"("ID") ON DELETE CASCADE
@@ -79,9 +80,7 @@ CREATE TABLE IF NOT EXISTS "Assegnazioni" (
 	"ID"	INTEGER,
 	"Paziente_id"	INTEGER NOT NULL,
 	"Esercizio_id"	INTEGER NOT NULL,
-	-- DA NOTIFICARE
 	"Stato"	TEXT DEFAULT 'da_svolgere' CHECK("stato" IN ('da_svolgere', 'completato')), 
-
 	"Data_Assegnazione"	DATETIME DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY("ID" AUTOINCREMENT),
 	FOREIGN KEY("Esercizio_id") REFERENCES "Esercizi"("ID") ON DELETE CASCADE,
@@ -98,7 +97,6 @@ CREATE TABLE IF NOT EXISTS "Svolgimenti" (
 	"Data_Esecuzione"	DATETIME DEFAULT CURRENT_TIMESTAMP,
 	-- RIFLETTERE SU QUESTO CAMPO
 	"Completato"	BOOLEAN DEFAULT 0,
-	-- FAR AGGIUNGERE LO STATO EMOTIVO
 	"Stato_Emotivo"	INTEGER CHECK("Stato_Emotivo" BETWEEN 1 AND 5),
 	PRIMARY KEY("ID" AUTOINCREMENT),
 	FOREIGN KEY("Esercizio_id") REFERENCES "Esercizi"("ID") ON DELETE CASCADE,

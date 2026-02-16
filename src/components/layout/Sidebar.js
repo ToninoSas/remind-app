@@ -17,7 +17,7 @@ export default function Sidebar() {
     <>
       {/* Mobile Header: Usiamo un blu più profondo per il contrasto */}
       <header className="lg:hidden flex items-center justify-between p-4 bg-blue-800 text-white shadow-md">
-        <h1 className="text-xl font-black italic tracking-tight">CogniCare</h1>
+        <h1 className="text-xl font-black italic tracking-tight">Remind</h1>
         <button onClick={() => setIsOpen(true)} className="p-2 text-3xl">
           ☰
         </button>
@@ -34,7 +34,7 @@ export default function Sidebar() {
         <div className="flex flex-col h-full p-6">
           {/* Logo: Blu più scuro e font più spesso */}
           <div className="mb-10 text-2xl font-black text-blue-800 italic tracking-tighter">
-            CogniCare
+            Remind
           </div>
 
           {/* Navigazione */}

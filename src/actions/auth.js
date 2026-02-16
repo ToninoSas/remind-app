@@ -12,26 +12,31 @@ export async function registerAction(formData) {
   const cognome = formData.get("cognome");
   const email = formData.get("email");
   const password = formData.get("password");
-  const tipologia = formData.get("tipologia")
+  const tipologia = formData.get("tipologia");
 
   const transaction = db.transaction(() => {
     // 1. Creazione Account Utente (Obbligatoria)
     const hashedPassword = bcrypt.hashSync(password, SALT_ROUNDS);
-    const userRes = db.prepare(`
+    const userRes = db
+      .prepare(
+        `
         INSERT INTO Utenti (Nome, Cognome, Email, Password_Hash, Ruolo)
         VALUES (?, ?, ?, ?, 'caregiver')
-      `).run(nome, cognome, email, hashedPassword);
+      `,
+      )
+      .run(nome, cognome, email, hashedPassword);
 
     const utenteId = userRes.lastInsertRowid;
 
     // 2. Creazione Profilo Caregivet
-    const caregiverRes = db.prepare(`
+    const caregiverRes = db
+      .prepare(
+        `
         INSERT INTO Caregivers (Tipologia, Utente_id)
         VALUES (?, ?)
-      `).run(
-      tipologia,
-      utenteId
-    );
+      `,
+      )
+      .run(tipologia, utenteId);
 
     return caregiverRes.lastInsertRowid;
   });
@@ -42,7 +47,7 @@ export async function registerAction(formData) {
 
     return { success: true, userId: resultId };
   } catch (error) {
-    console.error(error.message)
+    console.error(error.message);
     if (error.message.includes("UNIQUE constraint failed")) {
       return { error: "Questa email è già registrata." };
     }
@@ -52,9 +57,9 @@ export async function registerAction(formData) {
 
 // LOGIN con Comparazione Hash
 export async function loginAction(email, password) {
-  const user = db.prepare(`
-    SELECT * FROM Utenti WHERE Email = ?
-  `).get(email);
+  const user = db
+    .prepare(`SELECT * FROM Utenti WHERE Email = ?`)
+    .get(email);
 
   if (!user) {
     return { error: "Utente non trovato." };
@@ -67,28 +72,45 @@ export async function loginAction(email, password) {
     return { error: "Credenziali non valide." };
   }
 
+  let profileId = null;
+  if (user.Ruolo === "caregiver") {
+    const caregiver = db
+      .prepare(`SELECT ID FROM Caregivers WHERE Utente_id = ?`)
+      .get(user.ID);
+    profileId = caregiver?.ID || null;
+  } else if (user.Ruolo === "paziente") {
+    const paziente = db
+      .prepare(`SELECT ID FROM Pazienti WHERE Utente_id = ?`)
+      .get(user.ID);
+    profileId = paziente?.ID || null;
+  }
+
   // 3. Prepariamo i Cookie
   const cookieStore = await cookies();
   const token = `session-${user.ID}-${Date.now()}`;
-
-  cookieStore.set("auth-token", token, {
+  const cookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 24 * 7,
     path: "/",
-  });
+  };
+
+  cookieStore.set("auth-token", token, cookieOptions);
 
   // Usiamo il valore della colonna 'Ruolo' del tuo schema
-  cookieStore.set('user-role', user.Ruolo, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 60 * 60 * 24 * 7,
-    path: '/',
-  });
+  cookieStore.set("user-role", user.Ruolo, cookieOptions);
   // 3. Restituiamo l'utente senza la password_hash per sicurezza
-  const { password_hash, ...userSafe } = user;
-
-  return userSafe;
+  // const { password_hash, ...userSafe } = user;
+  // restituisco i dati dell'utente insieme all'id del suo profilo specifico (caregiver o paziente)
+  // return { ...userSafe, profileId };
+  return {
+    AuthID: user.ID,
+    Nome: user.Nome,
+    Cognome: user.Cognome,
+    Email: user.Email,
+    Ruolo: user.Ruolo,
+    ProfileID: profileId,
+    Data_Creazione: user.Data_Creazione,
+  }
 }
 
 export async function logoutAction() {
@@ -99,5 +121,5 @@ export async function logoutAction() {
   cookieStore.delete("user-role");
 
   // Reindirizziamo l'utente alla home o al login
-  redirect("/login");
+  // redirect("/login");
 }

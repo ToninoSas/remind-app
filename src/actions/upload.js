@@ -2,6 +2,8 @@
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 
+// AZIONE PER GESTIRE L'UPLOAD DEI MEDIA (FOTO, VIDEO, AUDIO) ASSOCIATI AI RICORDI
+// Riceve un FormData con il file, lo salva nella cartella pubblica e restituisce l'URL di accesso
 export async function uploadMediaAction(formData) {
   const file = formData.get('file');
   if (!file) return { error: "Nessun file fornito" };

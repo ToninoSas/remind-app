@@ -15,7 +15,7 @@ export default async function PazienteLayout({ children }) {
       {/* La Sidebar appare solo per le rotte in questo gruppo */}
       <Sidebar />
 
-      <main className="flex-1 p-4 md:p-10 bg-white md:m-4 overflow-y-auto">
+      <main className="flex-1 p-4 md:p-10 bg-white overflow-y-auto">
         {children}
       </main>
     </div>

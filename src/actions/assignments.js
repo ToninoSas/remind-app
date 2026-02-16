@@ -40,3 +40,51 @@ export async function unassignExerciseAction(assignmentId, patientId) {
     return { error: "Impossibile rimuovere l'esercizio assegnato." };
   }
 }
+
+/** * --- LATO PAZIENTE ---
+ */
+
+// Recupera gli esercizi assegnati a un paziente specifico
+// Filtra per stato (es. 'da_svolgere') e controlla che l'esercizio sia ancora attivo
+export async function getAssignedExercisesAction(pazienteId, stato = 'da_svolgere') {
+  try {
+    // Facciamo un JOIN con la tabella Esercizi per avere i dettagli (Titolo, Tipo, etc.)
+    // Fondamentale il controllo e.is_active = 1
+    const assignments = db.prepare(`
+      SELECT 
+        e.ID, 
+        e.Titolo, 
+        e.Tipo, 
+        e.Contenuto_Json,
+        a.Data_Assegnazione,
+        a.Stato
+      FROM Assegnazioni a
+      JOIN Esercizi e ON a.Esercizio_id = e.ID
+      WHERE a.Paziente_id = ? 
+        AND a.Stato = ? 
+      ORDER BY a.Data_Assegnazione DESC
+    `).all(pazienteId, stato);
+
+    return assignments;
+  } catch (e) {
+    console.error("Errore recupero assegnazioni:", e);
+    return [];
+  }
+}
+
+// Aggiorna lo stato di un'assegnazione (es. da 'da_svolgere' a 'completato')
+// Nota: Questa viene chiamata solitamente dentro saveSvolgimentoAction
+export async function updateAssignmentStatusAction(pazienteId, esercizioId, nuovoStato) {
+  try {
+    db.prepare(`
+      UPDATE Assegnazioni 
+      SET Stato = ? 
+      WHERE Paziente_id = ? AND Esercizio_id = ?
+    `).run(nuovoStato, pazienteId, esercizioId);
+
+    revalidatePath('/myapp/esercizi');
+    return { success: true };
+  } catch (e) {
+    return { error: "Errore aggiornamento stato." };
+  }
+}

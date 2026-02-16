@@ -10,12 +10,12 @@ export default function AssignModal({ onAssign, onClose }) {
 
   useEffect(() => {
     async function load() {
-      const data = await getExercisesAction(user.id);
+      const data = await getExercisesAction(user.ProfileID);
       setExercises(data);
       setLoading(false);
     }
     load();
-  }, [user.id]);
+  }, [user.ProfileID]);
 
   return (
     <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
@@ -28,21 +28,25 @@ export default function AssignModal({ onAssign, onClose }) {
         <div className="p-6 overflow-y-auto space-y-3">
           {loading ? (
             <p className="text-center py-10">Caricamento libreria...</p>
-          ) : exercises.map(ex => (
-            <div 
-              key={ex.id} 
-              className="flex justify-between items-center p-4 bg-slate-50 hover:bg-blue-50 rounded-2xl border border-slate-100 transition-colors cursor-pointer group"
-              onClick={() => onAssign(ex.id)}
-            >
-              <div>
-                <p className="font-bold text-slate-800">{ex.titolo}</p>
-                <p className="text-xs text-slate-600 uppercase font-black">{ex.tipo}</p>
+          ) : exercises.length === 0 ? (
+            <p className="text-center py-10 text-slate-600">Nessun esercizio disponibile</p>
+          ) : (
+            exercises.map(ex => (
+              <div 
+                key={ex.ID} 
+                className="flex justify-between items-center p-4 bg-slate-50 hover:bg-blue-50 rounded-2xl border border-slate-100 transition-colors cursor-pointer group"
+                onClick={() => onAssign(ex.ID)}
+              >
+                <div>
+                  <p className="font-bold text-slate-800">{ex.Titolo}</p>
+                  <p className="text-xs text-slate-600 uppercase font-black">{ex.Tipo}</p>
+                </div>
+                <button className="bg-white border-2 border-blue-600 text-blue-600 px-4 py-2 rounded-xl text-xs font-black group-hover:bg-blue-600 group-hover:text-white transition-all">
+                  ASSEGNA +
+                </button>
               </div>
-              <button className="bg-white border-2 border-blue-600 text-blue-600 px-4 py-2 rounded-xl text-xs font-black group-hover:bg-blue-600 group-hover:text-white transition-all">
-                ASSEGNA +
-              </button>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>

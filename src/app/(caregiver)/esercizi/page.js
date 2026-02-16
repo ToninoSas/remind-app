@@ -22,15 +22,16 @@ export default function EserciziPage() {
   // senza useCallback ogni volta che renderizzo la pagina creo una nuova funziona
   // con useCallback invece non ne crea una nuova e ti restituisce quella che aveva
   const loadExercises = useCallback(async () => {
-    if (!user?.ID) return;
+    console.log("utente", user);
+    if (!user?.ProfileID) return;
     // imposto il caricamento
     setLoading(true); 
     // prendo gli esercizi
-    const data = await getExercisesAction(user.ID);
+    const data = await getExercisesAction(user.ProfileID);
     setEsercizi(data);
     setLoading(false);
     // una volta che ho gli esercizi caricati il caricamento è finito
-  }, [user?.ID]);
+  }, [user?.ProfileID]);
   /*
   FUNZIONAMENTO useEffect
   ha una lista delle dipendenze

@@ -103,7 +103,7 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
 
     const res = initialData
       ? await updateExerciseAction(initialData.ID, payload)
-      : await createExerciseAction(payload, user.ID);
+      : await createExerciseAction(payload, user.ProfileID);
 
     if (res.success) onSave();
     else alert(res.error);

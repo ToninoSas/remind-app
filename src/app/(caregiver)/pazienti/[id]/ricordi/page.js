@@ -8,6 +8,7 @@ import AddMemoryBoxModal from "@/components/layout/caregiver/ricordi/AddMemoryBo
 import PatientContextBanner from "@/components/layout/caregiver/ricordi/PatientContextBanner";
 import { useAuth } from "@/context/auth-context";
 
+// PAGINA PRINCIPALE RICORDI - MOSTRA TUTTI I BOX, CON AZIONE DI CREAZIONE NUOVO BOX
 export default function RicordiPage({ params }) {
   const { user } = useAuth();
   const resolvedParams = use(params);
@@ -55,7 +56,7 @@ export default function RicordiPage({ params }) {
       {showModal && (
         <AddMemoryBoxModal
           pazienteId={pazienteId}
-          caregiverId={user.ID} // Dall'auth context
+          caregiverId={user.ProfileID} // Dall'auth context
           onClose={() => setShowModal(false)}
           onSuccess={loadData}
         />

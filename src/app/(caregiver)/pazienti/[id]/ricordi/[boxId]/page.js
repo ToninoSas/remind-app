@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { getDetailedPatientAction } from "@/actions/patients";
 import {
   getMemoryBoxDetailAction,
@@ -12,6 +13,7 @@ import AddMemoryItemModal from "@/components/layout/caregiver/ricordi/AddMemoryI
 import EditMemoryBoxModal from "@/components/layout/caregiver/ricordi/EditMemoryBoxModal"; // Nuovo
 import EditMemoryItemModal from "@/components/layout/caregiver/ricordi/EditMemoryItemModal"; // Nuovo
 
+// PAGINA DI DETTAGLIO SINGOLO BOX - MOSTRA TUTTI I RICORDI AL SUO INTERNO, CON AZIONI DI GESTIONE
 export default function DettaglioBoxPage({ params }) {
   const router = useRouter();
   const { id, boxId } = React.use(params);
@@ -50,7 +52,7 @@ export default function DettaglioBoxPage({ params }) {
     )
       return;
     const res = await deleteMemoryBoxAction(boxId, id);
-    if (res.success) router.push(`/caregiver/pazienti/${id}/ricordi`);
+    if (res.success) router.push(`/pazienti/${id}/ricordi`);
   };
 
   if (loading)
@@ -66,15 +68,12 @@ export default function DettaglioBoxPage({ params }) {
 
       <div className="max-w-6xl mx-auto px-8">
         {/* Navigazione */}
-        <button
-          onClick={() => router.push(`/caregiver/pazienti/${id}/ricordi`)}
-          className="mb-6 flex items-center gap-2 font-black text-slate-900 uppercase text-[10px] tracking-widest hover:text-blue-700 transition-all"
+        <Link
+          href={`/pazienti/${id}/ricordi`}
+          className="block mb-6 text-[10px] font-black text-slate-700 hover:text-blue-700 uppercase tracking-widest border border-slate-300 px-4 py-2 rounded-xl bg-white shadow-sm transition-all"
         >
-          <span className="w-8 h-8 rounded-full bg-white border border-slate-300 flex items-center justify-center shadow-sm">
-            ←
-          </span>{" "}
-          Torna alla lista
-        </button>
+          ← Torna alla lista dei box
+        </Link>
 
         {/* --- HEADER BOX (CON AZIONI) --- */}
         <div className="bg-white p-10 rounded-[3rem] border border-slate-300 shadow-xl relative mb-10">
@@ -116,56 +115,71 @@ export default function DettaglioBoxPage({ params }) {
 
         {/* --- GRIGLIA ITEM --- */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {items.map((item) => (
-            <div
-              key={item.ID}
-              className="bg-white rounded-[3rem] border border-slate-300 shadow-lg overflow-hidden group"
-            >
-              <div className="aspect-video bg-slate-100 border-b border-slate-200 flex items-center justify-center">
-                {item.Tipo === "foto" ? (
-                  <img src={item.Url} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-4xl">
-                    {item.Tipo === "audio" ? "🎵" : "🎥"}
-                  </span>
-                )}
-              </div>
-              <div className="p-8">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h4 className="text-2xl font-black text-slate-950">
-                      {item.Titolo}
-                    </h4>
-                    <p className="text-[10px] font-black text-blue-700 uppercase tracking-widest mt-1">
-                      {item.Luogo} • {item.Datazione}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setEditingItem(item)}
-                      className="text-slate-400 hover:text-blue-600 font-bold"
-                    >
-                      Modifica
-                    </button>
-                    <button
-                      onClick={async () => {
-                        if (confirm("Eliminare?")) {
-                          await deleteMemoryItemAction(item.ID, boxId, id);
-                          loadData();
-                        }
-                      }}
-                      className="text-red-300 hover:text-red-600 font-bold"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                </div>
-                <p className="text-slate-800 font-medium italic leading-relaxed">
-                  "{item.Testo}"
-                </p>
-              </div>
+          {!items || items.length === 0 ? (
+            <div className="col-span-full bg-white rounded-[2.5rem] border border-slate-300 shadow-lg p-8 text-center">
+              <h3 className="text-2xl font-black text-slate-950 mb-4">
+                Nessun ricordo trovato in questo box
+              </h3>
+              <p className="text-slate-800 text-sm font-medium italic">
+                Aggiungi un nuovo ricordo per iniziare a raccogliere i momenti
+                speciali.
+              </p>
             </div>
-          ))}
+          ) : (
+            items.map((item) => (
+              <div
+                key={item.ID}
+                className="bg-white rounded-[3rem] border border-slate-300 shadow-lg overflow-hidden group"
+              >
+                <div className="aspect-video bg-slate-100 border-b border-slate-200 flex items-center justify-center">
+                  {item.Tipo === "foto" ? (
+                    <img
+                      src={item.Url}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-4xl">
+                      {item.Tipo === "audio" ? "🎵" : "🎥"}
+                    </span>
+                  )}
+                </div>
+                <div className="p-8">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h4 className="text-2xl font-black text-slate-950">
+                        {item.Titolo}
+                      </h4>
+                      <p className="text-[10px] font-black text-blue-700 uppercase tracking-widest mt-1">
+                        {item.Luogo} • {item.Datazione}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setEditingItem(item)}
+                        className="text-slate-400 hover:text-blue-600 font-bold"
+                      >
+                        Modifica
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (confirm("Eliminare?")) {
+                            await deleteMemoryItemAction(item.ID, boxId, id);
+                            loadData();
+                          }
+                        }}
+                        className="text-red-300 hover:text-red-600 font-bold"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-slate-800 font-medium italic leading-relaxed">
+                    "{item.Testo}"
+                  </p>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

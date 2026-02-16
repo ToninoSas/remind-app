@@ -1,6 +1,7 @@
 // src/app/components/layout/caregiver/ricordi/PatientContextBanner.js
 "use client";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function PatientContextBanner({ paziente }) {
   const router = useRouter();
@@ -29,12 +30,12 @@ export default function PatientContextBanner({ paziente }) {
           </div>
         </div>
 
-        <button
-          onClick={() => router.push(`/pazienti/${paziente.ID}`)}
+        <Link
+          href={`/pazienti/${paziente.ID}`}
           className="text-[10px] font-black text-slate-700 hover:text-blue-700 uppercase tracking-widest border border-slate-300 px-4 py-2 rounded-xl bg-white shadow-sm transition-all"
         >
-          ← Torna alla cartella
-        </button>
+          ← Torna alla pagina del paziente
+        </Link>
       </div>
     </div>
   );

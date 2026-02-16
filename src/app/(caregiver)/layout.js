@@ -12,7 +12,7 @@ export default async function CaregiverLayout({ children }) {
   }
 
   if (role !== "caregiver") {
-    return redirect("/paziente");
+    return redirect("/myapp/esercizi");
   }
 
   return (

@@ -113,7 +113,7 @@ export default function SchedaPaziente({ params }) {
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-20">
       {/* Navigazione Back - Testo scurito */}
-      <button
+      {/* <button
         onClick={() => router.push("/caregiver/pazienti")}
         className="group flex items-center gap-2 text-slate-800 hover:text-blue-700 transition-colors font-black ml-2"
       >
@@ -121,7 +121,14 @@ export default function SchedaPaziente({ params }) {
           ←
         </div>
         Torna alla lista pazienti
-      </button>
+      </button> */}
+
+      <Link
+        href={`/pazienti`}
+        className="block mb-6 text-[10px] font-black text-slate-700 hover:text-blue-700 uppercase tracking-widest border border-slate-300 px-4 py-2 rounded-xl bg-white shadow-sm transition-all"
+      >
+        ← Torna alla lista dei pazienti
+      </Link>
 
       {/* Success Toast - Rinforzato */}
       {showSuccess && (

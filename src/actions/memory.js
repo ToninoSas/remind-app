@@ -9,7 +9,7 @@ export async function getMemoryBoxesAction(pazienteId) {
     .prepare(
       `
     SELECT * FROM Memory_boxs 
-    WHERE Paziente_id = ? 
+    WHERE Paziente_id = ? AND Data_Eliminazione IS NULL
     ORDER BY Data_Creazione DESC
   `
     )
@@ -18,9 +18,9 @@ export async function getMemoryBoxesAction(pazienteId) {
 
 export async function getMemoryBoxDetailAction(boxId) {
   try {
-    const box = db.prepare("SELECT * FROM Memory_boxs WHERE ID = ?").get(boxId);
+    const box = db.prepare("SELECT * FROM Memory_boxs WHERE ID = ? AND Data_Eliminazione IS NULL").get(boxId);
     const items = db
-      .prepare("SELECT * FROM Memory_items WHERE Box_id = ?")
+      .prepare("SELECT * FROM Memory_items WHERE Box_id = ? AND Data_Eliminazione IS NULL")
       .all(boxId);
     return { box, items };
   } catch (e) {
@@ -68,10 +68,10 @@ export async function updateMemoryBoxAction(boxId, data, pazienteId) {
 
 export async function deleteMemoryBoxAction(boxId, pazienteId) {
   try {
-    // 1. Eliminiamo gli item associati al box
-    db.prepare("DELETE FROM Memory_items WHERE Box_id = ?").run(boxId);
-    // 2. Eliminiamo il box
-    db.prepare("DELETE FROM Memory_boxs WHERE ID = ?").run(boxId);
+    // 1. Eliminiamo logicamente gli item associati al box
+    db.prepare("UPDATE Memory_items SET Data_Eliminazione = CURRENT_TIMESTAMP WHERE Box_id = ?").run(boxId);
+    // 2. Eliminiamo logicamente il box
+    db.prepare("UPDATE Memory_boxs SET Data_Eliminazione = CURRENT_TIMESTAMP WHERE ID = ?").run(boxId);
 
     revalidatePath(`/caregiver/pazienti/${pazienteId}/ricordi`);
     return { success: true };
@@ -124,7 +124,7 @@ export async function updateMemoryItemAction(itemId, data, boxId, pazienteId) {
 // --- ELIMINA UN SINGOLO RICORDO ---
 export async function deleteMemoryItemAction(itemId, boxId, pazienteId) {
   try {
-    db.prepare("DELETE FROM Memory_items WHERE ID = ?").run(itemId);
+    db.prepare("UPDATE Memory_items SET Data_Eliminazione = CURRENT_TIMESTAMP WHERE ID = ?").run(itemId);
     
     // Ricarichiamo la pagina del box
     revalidatePath(`/caregiver/pazienti/${pazienteId}/ricordi/${boxId}`);

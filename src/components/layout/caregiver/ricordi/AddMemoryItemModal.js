@@ -3,6 +3,8 @@ import { useState } from "react";
 import { addMemoryItemAction } from "@/actions/memory";
 import { uploadMediaAction } from "@/actions/upload";
 
+// MODALE PER LA CREAZIONE DI UN NUOVO RICORDO ALL'INTERNO DI UN BOX
+// SI TROVA ALL'INTERNO DELLA PAGINA DI DETTAGLIO DI OGNI BOX
 export default function AddMemoryItemModal({ boxId, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -21,8 +23,10 @@ export default function AddMemoryItemModal({ boxId, onClose, onSuccess }) {
     setLoading(true);
     const upData = new FormData();
     upData.append("file", file);
+    // Carichiamo il file e otteniamo l'URL
     const res = await uploadMediaAction(upData);
 
+    // Aggiorniamo lo stato con l'URL restituito e il tipo (foto, video, ecc.)
     if (res.success) {
       setFormData({
         ...formData,

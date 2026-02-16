@@ -13,7 +13,7 @@ export default function PazientiPage() {
 
   useEffect(() => {
     async function loadData() {
-      const currentId = user?.ID || user?.id;
+      const currentId = user?.ProfileID;
       if (currentId) {
         const data = await getPatientsAction(currentId);
         setPazienti(data);

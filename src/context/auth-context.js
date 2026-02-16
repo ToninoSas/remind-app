@@ -25,20 +25,17 @@ export function AuthProvider({ children }) {
     setUser(userData);
     sessionStorage.setItem("user", JSON.stringify(userData));
 
-    if (userData.ruolo === "paziente") {
-      router.push("/myapp/esercizi");
+    if (userData.Ruolo === "paziente") {
+      router.push("/myapp");
     } else {
       router.push("/pazienti");
     }
   };
 
-  const handleLogout = async () => {
+  const logout = async () => {
     // 1. Pulizia Client (la tua logica)
     setUser(null);
     sessionStorage.removeItem("user");
-    localStorage.removeItem("user"); // Spesso si usa anche questo
-
-    // 2. Pulizia Server (Fondamentale!)
     // Questa azione rimuove 'auth-token' e 'user-role' dai cookie
     await logoutAction();
 
@@ -49,7 +46,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, handleLogout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );
