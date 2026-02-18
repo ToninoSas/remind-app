@@ -8,10 +8,10 @@ import {
   deleteMemoryItemAction,
   deleteMemoryBoxAction,
 } from "@/actions/memory";
-import PatientContextBanner from "@/components/layout/caregiver/ricordi/PatientContextBanner";
-import AddMemoryItemModal from "@/components/layout/caregiver/ricordi/AddMemoryItemModal";
-import EditMemoryBoxModal from "@/components/layout/caregiver/ricordi/EditMemoryBoxModal"; // Nuovo
-import EditMemoryItemModal from "@/components/layout/caregiver/ricordi/EditMemoryItemModal"; // Nuovo
+import PatientContextBanner from "@/components/caregiver/gestioneRicordi/PatientContextBanner";
+import AddMemoryItemModal from "@/components/caregiver/gestioneRicordi/AddMemoryItemModal";
+import EditMemoryBoxModal from "@/components/caregiver/gestioneRicordi/EditMemoryBoxModal"; // Nuovo
+import EditMemoryItemModal from "@/components/caregiver/gestioneRicordi/EditMemoryItemModal"; // Nuovo
 
 // PAGINA DI DETTAGLIO SINGOLO BOX - MOSTRA TUTTI I RICORDI AL SUO INTERNO, CON AZIONI DI GESTIONE
 export default function DettaglioBoxPage({ params }) {
@@ -129,57 +129,82 @@ export default function DettaglioBoxPage({ params }) {
             items.map((item) => (
               <div
                 key={item.ID}
-                className="bg-white rounded-[3rem] border border-slate-300 shadow-lg overflow-hidden group"
+                className="bg-white rounded-[3rem] border border-slate-300 shadow-lg overflow-hidden group flex flex-col"
               >
-                <div className="aspect-video bg-slate-100 border-b border-slate-200 flex items-center justify-center">
-                  {item.Tipo === "foto" ? (
+                {/* --- PARTE SUPERIORE: MEDIA (Fissa in 16:9) --- */}
+                <div className="relative w-full aspect-video bg-slate-100 border-b border-slate-200 flex items-center justify-center overflow-hidden">
+
+                  {item.Tipo === "foto" && (
                     <img
                       src={item.Url}
-                      className="w-full h-full object-cover"
+                      alt={item.Titolo}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                  ) : (
-                    <span className="text-4xl">
-                      {item.Tipo === "audio" ? "🎵" : "🎥"}
-                    </span>
+                  )}
+
+                  {item.Tipo === "video" && (
+                    <video
+                      src={item.Url}
+                      controls
+                      className="w-full h-full object-contain bg-black"
+                    />
+                  )}
+
+                  {item.Tipo === "audio" && (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-purple-50 p-4">
+                      {/* Icona ridimensionata per la card */}
+                      <span className="text-5xl mb-2">🎵</span>
+                      <audio
+                        src={item.Url}
+                        controls
+                        className="w-full max-w-[200px] h-10 scale-90"
+                      />
+                    </div>
                   )}
                 </div>
-                <div className="p-8">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h4 className="text-2xl font-black text-slate-950">
-                        {item.Titolo}
-                      </h4>
-                      <p className="text-[10px] font-black text-blue-700 uppercase tracking-widest mt-1">
-                        {item.Luogo} • {item.Datazione}
-                      </p>
+
+                {/* --- PARTE INFERIORE: DATI E AZIONI --- */}
+                <div className="p-8 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h4 className="text-2xl font-black text-slate-950 leading-tight">
+                          {item.Titolo}
+                        </h4>
+                        <p className="text-[10px] font-black text-blue-700 uppercase tracking-widest mt-1">
+                          {item.Luogo} • {item.Datazione}
+                        </p>
+                      </div>
+
+                      {/* Pulsanti Azione */}
+                      <div className="flex gap-4">
+                        <button
+                          onClick={() => setEditingItem(item)}
+                          className="text-slate-400 hover:text-blue-600 font-bold text-sm transition-colors"
+                        >
+                          Modifica
+                        </button>
+                        <button
+                          onClick={async () => {
+                            if (confirm("Vuoi eliminare questo ricordo?")) {
+                              await deleteMemoryItemAction(item.ID, boxId, id);
+                              loadData();
+                            }
+                          }}
+                          className="text-red-200 hover:text-red-600 font-bold transition-colors"
+                        >
+                          ✕
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setEditingItem(item)}
-                        className="text-slate-400 hover:text-blue-600 font-bold"
-                      >
-                        Modifica
-                      </button>
-                      <button
-                        onClick={async () => {
-                          if (confirm("Eliminare?")) {
-                            await deleteMemoryItemAction(item.ID, boxId, id);
-                            loadData();
-                          }
-                        }}
-                        className="text-red-300 hover:text-red-600 font-bold"
-                      >
-                        ✕
-                      </button>
-                    </div>
+
+                    <p className="text-slate-700 font-medium italic leading-relaxed line-clamp-3">
+                      "{item.Testo}"
+                    </p>
                   </div>
-                  <p className="text-slate-800 font-medium italic leading-relaxed">
-                    "{item.Testo}"
-                  </p>
                 </div>
               </div>
-            ))
-          )}
+            )))}
         </div>
       </div>
 

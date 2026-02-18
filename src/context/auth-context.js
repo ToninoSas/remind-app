@@ -22,6 +22,9 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     const userData = await loginAction(email, password);
+    if(userData.error){
+      throw "Errore nel login"
+    }
     setUser(userData);
     sessionStorage.setItem("user", JSON.stringify(userData));
 

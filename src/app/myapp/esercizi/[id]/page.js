@@ -6,10 +6,10 @@ import { getExerciseByIdAction } from "@/actions/excercises";
 import { saveSvolgimentoAction } from "@/actions/paziente";
 
 // Importiamo i player specifici che abbiamo creato
-import QuizPlayer from "@/components/layout/paziente/QuizPlayer";
-import CalcoloPlayer from "@/components/layout/paziente/CalcoloPlayer";
-import MemoryPlayer from "@/components/layout/paziente/MemoryPlayer";
-import EmotionalFeedback from "@/components/layout/paziente/EmotionalFeedback";
+import QuizPlayer from "@/components/paziente/QuizPlayer";
+import CalcoloPlayer from "@/components/paziente/CalcoloPlayer";
+import MemoryPlayer from "@/components/paziente/MemoryPlayer";
+import EmotionalFeedback from "@/components/paziente/EmotionalFeedback";
 
 export default function EsecuzioneEsercizio({ params }) {
   const { user } = useAuth();

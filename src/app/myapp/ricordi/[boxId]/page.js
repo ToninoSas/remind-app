@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, use } from "react";
+import Image from "next/image";
 import { getMemoryBoxDetailAction } from "@/actions/memory";
 
 export default function VisualizzatoreRicordi({ params }) {
@@ -56,21 +57,48 @@ export default function VisualizzatoreRicordi({ params }) {
 
       <main className="flex-1 flex flex-col items-center justify-center p-6 space-y-8">
         {/* Contenitore Immagine/Media */}
-        <div className="w-full max-w-4xl bg-slate-100 rounded-[4rem] border-8 border-slate-100 shadow-2xl overflow-hidden aspect-video relative">
-          {currentItem.Tipo === "foto" ? (
-            <img
+        <div className="w-full max-w-4xl bg-slate-100 rounded-[4rem] border-8 border-slate-100 shadow-2xl overflow-hidden aspect-video relative group">
+
+          {/* --- GESTIONE FOTO --- */}
+          {currentItem.Tipo === "foto" && (
+            <Image
               src={currentItem.Url}
-              className="w-full h-full object-cover"
               alt={currentItem.Titolo}
+              fill={true}
+              className="object-cover animate-in fade-in duration-700"
             />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-9xl">
-              {currentItem.Tipo === "audio" ? "🎵" : "🎥"}
+          )}
+
+          {/* --- GESTIONE VIDEO --- */}
+          {currentItem.Tipo === "video" && (
+            <video
+              src={currentItem.Url}
+              controls
+              className="w-full h-full object-contain bg-black"
+            />
+          )}
+
+          {/* --- GESTIONE AUDIO --- */}
+          {currentItem.Tipo === "audio" && (
+            <div className="w-full h-full flex flex-col items-center justify-center bg-purple-50 p-12">
+              {/* Icona gigante per stimolo visivo */}
+              <span className="text-[6rem] mb-6 drop-shadow-sm animate-pulse">🎵</span>
+
+              <div className="w-full max-w-md bg-white p-6 rounded-[2.5rem] shadow-xl border-4 border-purple-100">
+                <p className="text-center text-purple-900 font-black uppercase tracking-widest mb-4 text-sm">
+                  Tocca il tasto "Play" per ascoltare
+                </p>
+                <audio
+                  src={currentItem.Url}
+                  controls
+                  className="w-full h-16"
+                />
+              </div>
             </div>
           )}
 
-          {/* Badge Luogo/Data integrato */}
-          <div className="absolute bottom-6 left-6 flex gap-3">
+          {/* Badge Luogo/Data integrato - pointer-events-none per non bloccare i click sui player */}
+          <div className="absolute bottom-6 left-6 flex gap-3 pointer-events-none">
             <span className="bg-white/90 backdrop-blur px-6 py-3 rounded-2xl font-black text-slate-950 text-xl shadow-lg">
               📍 {currentItem.Luogo}
             </span>
@@ -82,10 +110,10 @@ export default function VisualizzatoreRicordi({ params }) {
 
         {/* Testo del Ricordo (Grande e Leggibile) */}
         <div className="max-w-4xl text-center">
-          <h3 className="text-4xl font-black text-slate-950 mb-4">
+          <h3 className="text-4xl font-black text-slate-950 mb-4 uppercase tracking-tighter">
             {currentItem.Titolo}
           </h3>
-          <p className="text-3xl font-medium text-slate-700 italic leading-relaxed">
+          <p className="text-3xl font-medium text-slate-700 italic leading-relaxed px-4">
             "{currentItem.Testo}"
           </p>
         </div>
@@ -95,7 +123,7 @@ export default function VisualizzatoreRicordi({ params }) {
           <button
             disabled={currentIdx === 0}
             onClick={() => setCurrentIdx(currentIdx - 1)}
-            className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center text-5xl shadow-xl disabled:opacity-10 active:scale-90 transition-all border-4 border-slate-200"
+            className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center text-5xl shadow-xl disabled:opacity-20 active:scale-90 transition-all border-4 border-slate-200"
           >
             ⬅️
           </button>
@@ -103,7 +131,7 @@ export default function VisualizzatoreRicordi({ params }) {
           <button
             disabled={currentIdx === items.length - 1}
             onClick={() => setCurrentIdx(currentIdx + 1)}
-            className="w-24 h-24 bg-purple-700 rounded-full flex items-center justify-center text-5xl shadow-xl disabled:opacity-10 active:scale-90 transition-all border-4 border-purple-200"
+            className="w-24 h-24 bg-purple-700 rounded-full flex items-center justify-center text-5xl shadow-xl disabled:opacity-20 active:scale-90 transition-all border-4 border-purple-200"
           >
             ➡️
           </button>

@@ -13,6 +13,9 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           {children}
         </AuthProvider>
+        <footer className="p-8 text-center text-slate-600 text-sm font-medium">
+          © 2026 Remind — Tecnologia al servizio dell'assistenza.
+        </footer>
       </body>
     </html>
   );

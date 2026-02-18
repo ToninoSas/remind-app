@@ -26,7 +26,7 @@ export async function createExerciseAction(payload, caregiverId) {
         caregiverId,
       );
 
-    revalidatePath("/caregiver/esercizi");
+    revalidatePath("/esercizi");
     return { success: true, id: res.lastInsertRowid };
   } catch (error) {
     console.error("ERRORE SQL (Creazione):", error.message);
@@ -78,7 +78,7 @@ export async function updateExerciseAction(id, data) {
       id,
     );
 
-    revalidatePath("/caregiver/esercizi");
+    revalidatePath("/esercizi");
     return { success: true };
   } catch (error) {
     console.error("ERRORE SQL (Update):", error.message);
@@ -95,7 +95,7 @@ export async function deleteExerciseAction(id) {
     // non un dato clinico del paziente.
     db.prepare("DELETE FROM Esercizi WHERE ID = ?").run(id);
 
-    revalidatePath("/caregiver/esercizi");
+    revalidatePath("/esercizi");
     return { success: true };
   } catch (error) {
     console.error("ERRORE SQL (Delete):", error.message);

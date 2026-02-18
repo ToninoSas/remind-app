@@ -9,13 +9,15 @@ export function proxy(request) {
 
   console.log("Middleware attivo su:", pathname, "| Ruolo:", userRole, "| Autenticato:", isAuthenticated);
 
+  const isPublicRoute = pathname === "/login" || pathname === "/register" || pathname === "/";
+
   // 1. Se non è loggato e non è in /login, lo mandiamo al login
-  if (!isAuthenticated && pathname !== "/login") {
+  if (!isAuthenticated && !isPublicRoute) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // 2. Se è loggato e prova ad andare su /login o /register, lo mandiamo alla sua home
-  if (isAuthenticated && (pathname === "/login" || pathname === "/register")) {
+  if (isAuthenticated && isPublicRoute) {
     return NextResponse.redirect(
       new URL(userRole === "caregiver" ? "/pazienti" : "/myapp", request.url),
     );
@@ -34,7 +36,16 @@ export function proxy(request) {
   return NextResponse.next();
 }
 
-// Applichiamo il middleware a tutto tranne file statici e API
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    /*
+     * Esclude:
+     * 1. api (rotte API)
+     * 2. _next/static (file statici generati da Next)
+     * 3. _next/image (ottimizzazione immagini di Next)
+     * 4. favicon.ico
+     * 5. Estensioni file comuni (es. .png, .jpg, .svg, .webp, etc.)
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|pdf|mp4|mp3|wav)$).*)",
+  ],
 };

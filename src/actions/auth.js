@@ -89,15 +89,19 @@ export async function loginAction(email, password) {
   const cookieStore = await cookies();
   const token = `session-${user.ID}-${Date.now()}`;
   const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
+    httpOnly: true, // Impedisce l'accesso ai cookie tramite JavaScript nel browser (Protezione XSS)
+    secure: process.env.NODE_ENV === "production", // Il cookie viene inviato solo su connessioni HTTPS in produzione
+    path: "/", // Il cookie è valido per tutte le pagine del sito
   };
 
   cookieStore.set("auth-token", token, cookieOptions);
 
   // Usiamo il valore della colonna 'Ruolo' del tuo schema
   cookieStore.set("user-role", user.Ruolo, cookieOptions);
+
+  // salvo il profileId per i server components:
+  cookieStore.set("profile-id", profileId.toString(), cookieOptions);
+
   // 3. Restituiamo l'utente senza la password_hash per sicurezza
   // const { password_hash, ...userSafe } = user;
   // restituisco i dati dell'utente insieme all'id del suo profilo specifico (caregiver o paziente)
@@ -119,6 +123,7 @@ export async function logoutAction() {
   // Rimuoviamo entrambi i cookie che abbiamo creato
   cookieStore.delete("auth-token");
   cookieStore.delete("user-role");
+  cookieStore.delete("profile-id");
 
   // Reindirizziamo l'utente alla home o al login
   // redirect("/login");
