@@ -1,7 +1,12 @@
+"use client"
 import { useState } from "react";
+import AssignModal from "../gestioneEsercizi/AssignModel";
 import { assignExerciseAction, unassignExerciseAction, } from "@/actions/assignments";
+import { useRouter } from "next/navigation";
 
 export default function EserciziPaziente({ data, patientId }) {
+
+    const router = useRouter();
 
     const [showAssignModal, setShowAssignModal] = useState(false);
 
@@ -70,9 +75,9 @@ export default function EserciziPaziente({ data, patientId }) {
                                 {ex.Stato === "da_svolgere" && (
                                     <button
                                         onClick={() => handleUnassign(ex.assegnazione_id)}
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black text-red-700 hover:text-red-900 uppercase tracking-widest px-4"
+                                        className="opacity-0 group-hover:opacity-100 transition-opacity text-[13px] font-black text-red-700 hover:text-red-900 uppercase tracking-widest px-6"
                                     >
-                                        Annulla
+                                        Elimina
                                     </button>
                                 )}
                                 <span

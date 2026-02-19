@@ -2,6 +2,7 @@
 import db from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/dist/server/api-utils";
 
 export async function createPatientAction(data, caregiverId) {
   const { nome, cognome, patologia, descrizione, emailAccesso, passwordAccesso } = data;
@@ -82,6 +83,7 @@ SET Patologia = ?, Descrizione = ?
 WHERE ID = ?
 
 `).run(patologia, descrizione, patientId);
+
 
   });
 

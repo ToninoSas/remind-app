@@ -1,7 +1,11 @@
+"use client"
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { updatePatientAction, softDeletePatientAction } from "@/actions/patients";
 
 export default function AnagraficaPaziente({ data, patientID }) {
+
+    const router = useRouter();
 
     const [isEditing, setIsEditing] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -17,7 +21,7 @@ export default function AnagraficaPaziente({ data, patientID }) {
     });
 
     const handleSave = async () => {
-        const res = await updatePatientAction(patientId, data.info.Utente_id, editData);
+        const res = await updatePatientAction(patientID, data.info.Utente_id, editData);
         if (res.success) {
             setIsEditing(false);
             setShowSuccess(true);
@@ -29,7 +33,7 @@ export default function AnagraficaPaziente({ data, patientID }) {
     };
 
     const handleDelete = async () => {
-        const res = await softDeletePatientAction(patientId);
+        const res = await softDeletePatientAction(patientID);
         if (res.success) {
             router.push("/caregiver/pazienti");
         } else {
