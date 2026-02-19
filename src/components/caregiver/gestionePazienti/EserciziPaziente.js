@@ -2,20 +2,12 @@
 import { useState } from "react";
 import AssignModal from "../gestioneEsercizi/AssignModel";
 import { assignExerciseAction, unassignExerciseAction, } from "@/actions/assignments";
-<<<<<<< HEAD
-import AssignModal from "../gestioneEsercizi/AssignModel";
-=======
->>>>>>> 50a62eeb70acd4b9098eddd0b5b2017575bbe5b7
 import { useRouter } from "next/navigation";
 
 export default function EserciziPaziente({ data, patientId }) {
 
-    const router = useRouter();
-
     const [showAssignModal, setShowAssignModal] = useState(false);
     const router = useRouter();
-
-    console.log(data.esercizi)
 
     const handleAssign = async (esercizioId) => {
         const res = await assignExerciseAction(patientId, esercizioId);
@@ -81,13 +73,8 @@ export default function EserciziPaziente({ data, patientId }) {
                             <div className="flex items-center gap-4">
                                 {ex.Stato === "da_svolgere" && (
                                     <button
-<<<<<<< HEAD
                                         onClick={() => handleUnassign(ex.ID)}
                                         className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black text-red-700 hover:text-red-900 uppercase tracking-widest px-4"
-=======
-                                        onClick={() => handleUnassign(ex.assegnazione_id)}
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity text-[13px] font-black text-red-700 hover:text-red-900 uppercase tracking-widest px-6"
->>>>>>> 50a62eeb70acd4b9098eddd0b5b2017575bbe5b7
                                     >
                                         Elimina
                                     </button>
