@@ -5,7 +5,10 @@ import AnagraficaPaziente from "./AnagraficaPaziente";
 
 export default function PaginaPaziente({ data, patientId, activeTab }) {
 
+<<<<<<< HEAD
     
+=======
+>>>>>>> 50a62eeb70acd4b9098eddd0b5b2017575bbe5b7
     // ... (Tutte le altre funzioni handle rimangono simili)
 
     return (

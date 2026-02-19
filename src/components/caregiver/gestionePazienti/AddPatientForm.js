@@ -2,8 +2,13 @@
 import { useState } from "react";
 import { useAuth } from "@/context/auth-context";
 import { createPatientAction } from "@/actions/patients";
+import { useRouter } from "next/navigation";
 
-export default function AddPatientForm({ onCancel }) {
+export default function AddPatientForm() {
+
+  const router = useRouter();
+  const onCancel = () => router.push("/pazienti");
+
   const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);

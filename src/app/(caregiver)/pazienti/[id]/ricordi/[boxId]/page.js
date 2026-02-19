@@ -193,7 +193,7 @@ export default function DettaglioBoxPage({ params }) {
                           }}
                           className="text-red-200 hover:text-red-600 font-bold transition-colors"
                         >
-                          ✕
+                          Elimina
                         </button>
                       </div>
                     </div>
