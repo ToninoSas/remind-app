@@ -111,7 +111,7 @@ export async function getDetailedPatientAction(patientId) {
 
   // 2. Esercizi Assegnati (Schema: Esercizio_id, Paziente_id)
   const esercizi = db.prepare(`
-    SELECT e.Titolo, e.Tipo, a.Stato, a.Data_Assegnazione, a.ID as assegnazione_id
+    SELECT e.Titolo, e.Tipo, a.Stato, a.Data_Assegnazione, a.Esercizio_id, a.ID
     FROM Assegnazioni a
     JOIN Esercizi e ON a.Esercizio_id = e.ID
     WHERE a.Paziente_id = ?

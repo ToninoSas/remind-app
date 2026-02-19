@@ -5,6 +5,7 @@ import AnagraficaPaziente from "./PatientRegistry";
 
 export default function PaginaPaziente({ data, patientId, activeTab }) {
 
+    
     // ... (Tutte le altre funzioni handle rimangono simili)
 
     return (
@@ -43,17 +44,6 @@ export default function PaginaPaziente({ data, patientId, activeTab }) {
             {/* Tabs - Contrasto aumentato */}
             <div className="flex gap-2 p-1.5 bg-slate-200 rounded-[1.5rem] w-fit">
                 {["anagrafica", "esercizi", "statistiche"].map((tab) => (
-                    //   <button
-                    //     key={tab}
-                    //     onClick={() => setActiveTab(tab)}
-                    //     className={`px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all ${
-                    //       activeTab === tab
-                    //         ? "bg-white text-blue-800 shadow-md"
-                    //         : "text-slate-700 hover:text-slate-950"
-                    //     }`}
-                    //   >
-                    //     {tab}
-                    //   </button>
                     <Link
                         key={tab}
                         href={`/pazienti/${patientId}?tab=${tab}`}
