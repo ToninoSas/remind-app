@@ -16,5 +16,5 @@ export default async function SchedaPazientePage({ params, searchParams }) {
 
   const activeTab = tab || "anagrafica";
 
-  return <PaginaPaziente initialData={data} patientId={id} activeTab={activeTab}/>;
+  return <PaginaPaziente data={data} patientId={id} activeTab={activeTab}/>;
 }

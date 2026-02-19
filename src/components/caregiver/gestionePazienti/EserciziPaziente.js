@@ -1,9 +1,15 @@
+"use client"
 import { useState } from "react";
 import { assignExerciseAction, unassignExerciseAction, } from "@/actions/assignments";
+import AssignModal from "../gestioneEsercizi/AssignModel";
+import { useRouter } from "next/navigation";
 
 export default function EserciziPaziente({ data, patientId }) {
 
     const [showAssignModal, setShowAssignModal] = useState(false);
+    const router = useRouter();
+
+    console.log(data.esercizi)
 
     const handleAssign = async (esercizioId) => {
         const res = await assignExerciseAction(patientId, esercizioId);
@@ -15,9 +21,9 @@ export default function EserciziPaziente({ data, patientId }) {
         }
     };
 
-    const handleUnassign = async (esercizioId) => {
+    const handleUnassign = async (assignmentId) => {
         if (!confirm("Vuoi davvero rimuovere questo esercizio assegnato?")) return;
-        const res = await unassignExerciseAction(patientId, esercizioId);
+        const res = await unassignExerciseAction(assignmentId, patientId);
         if (res.success) {
             setShowAssignModal(false);
             router.refresh();
@@ -69,7 +75,7 @@ export default function EserciziPaziente({ data, patientId }) {
                             <div className="flex items-center gap-4">
                                 {ex.Stato === "da_svolgere" && (
                                     <button
-                                        onClick={() => handleUnassign(ex.assegnazione_id)}
+                                        onClick={() => handleUnassign(ex.ID)}
                                         className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black text-red-700 hover:text-red-900 uppercase tracking-widest px-4"
                                     >
                                         Annulla

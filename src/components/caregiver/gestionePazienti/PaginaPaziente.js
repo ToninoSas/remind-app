@@ -1,33 +1,11 @@
-"use client";
-import { useState } from "react";
-import { updatePatientAction, softDeletePatientAction } from "@/actions/patients";
-import { assignExerciseAction, unassignExerciseAction } from "@/actions/assignments";
 import StatistichePaziente from "@/components/caregiver/gestionePazienti/StatistichePaziente";
-import AssignModal from "@/components/caregiver/gestioneEsercizi/AssignModel";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import EserciziPaziente from "./EserciziPaziente";
 import AnagraficaPaziente from "./AnagraficaPaziente";
 
-export default function PaginaPaziente({ initialData, patientId, activeTab }) {
-    const router = useRouter();
-
-    // Usiamo initialData per popolare lo stato
-    const [data, setData] = useState(initialData);
-    
-
-     // Funzione per rinfrescare i dati dal server dopo un'azione
-    const refreshData = async () => {
-        // router.refresh() dice a Next.js di rieseguire il Server Component della pagina
-        // e scaricare solo i dati nuovi senza ricaricare la pagina intera
-        router.refresh();
-        // Opzionale: se vuoi aggiornare lo stato locale subito dopo router.refresh()
-        // puoi fare una fetch leggera o attendere che Next.js aggiorni i props
-    };
+export default function PaginaPaziente({ data, patientId, activeTab }) {
 
     
-
-
     // ... (Tutte le altre funzioni handle rimangono simili)
 
     return (
@@ -66,17 +44,6 @@ export default function PaginaPaziente({ initialData, patientId, activeTab }) {
             {/* Tabs - Contrasto aumentato */}
             <div className="flex gap-2 p-1.5 bg-slate-200 rounded-[1.5rem] w-fit">
                 {["anagrafica", "esercizi", "statistiche"].map((tab) => (
-                    //   <button
-                    //     key={tab}
-                    //     onClick={() => setActiveTab(tab)}
-                    //     className={`px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all ${
-                    //       activeTab === tab
-                    //         ? "bg-white text-blue-800 shadow-md"
-                    //         : "text-slate-700 hover:text-slate-950"
-                    //     }`}
-                    //   >
-                    //     {tab}
-                    //   </button>
                     <Link
                         key={tab}
                         href={`/pazienti/${patientId}?tab=${tab}`}
