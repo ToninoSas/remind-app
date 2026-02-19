@@ -1,6 +1,5 @@
 import { getDetailedPatientAction } from "@/actions/patients";
-import AddPatientButton from "@/components/caregiver/gestionePazienti/AddPatientButton";
-import PaginaPaziente from "@/components/caregiver/gestionePazienti/PaginaPaziente";
+import PaginaPaziente from "@/components/caregiver/gestionePazienti/PatientPage";
 import { notFound } from "next/navigation";
 
 export default async function SchedaPazientePage({ params, searchParams }) {
@@ -18,4 +17,5 @@ export default async function SchedaPazientePage({ params, searchParams }) {
   const activeTab = tab || "anagrafica";
 
   return <PaginaPaziente data={data} patientId={id} activeTab={activeTab}/>;
+
 }

@@ -23,12 +23,12 @@ export default function PaginaPaziente({ data, patientId, activeTab }) {
             {/* Header Profilo - Bordi e Testi rinforzati */}
             <header className="flex items-center gap-6 bg-white p-8 rounded-[2.5rem] shadow-md border border-slate-300">
                 <div className="w-20 h-20 rounded-3xl bg-blue-700 text-white flex items-center justify-center text-3xl font-black shadow-lg shadow-blue-100">
-                    {data.info.Name[0]}
-                    {data.info.Surname[0]}
+                    {data.info.Nome[0]}
+                    {data.info.Cognome[0]}
                 </div>
                 <div>
                     <h1 className="text-3xl font-black text-slate-950 tracking-tight">
-                        {data.info.Name} {data.info.Surname}
+                        {data.info.Nome} {data.info.Cognome}
                     </h1>
                     <div className="flex gap-2 mt-1">
                         <span className="text-[10px] bg-blue-50 text-blue-800 px-2 py-1 rounded-lg font-black border border-blue-100 uppercase tracking-wider">
