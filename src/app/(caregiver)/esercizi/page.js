@@ -1,5 +1,5 @@
 import { getExercisesAction } from "@/actions/excercises";
-import LibreriaEsercizi from "@/components/caregiver/gestioneEsercizi/LibreriaEsercizi";
+import LibreriaEsercizi from "@/components/caregiver/gestioneEsercizi/LibraryExercise";
 import { cookies } from "next/headers";
 
 export default async function EserciziPage({ searchParams }) {
