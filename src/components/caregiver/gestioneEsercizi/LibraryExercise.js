@@ -84,58 +84,71 @@ export default function LibreriaEsercizi({ initialEsercizi, activeFilter }) {
 
             {/* GRIGLIA CARD (Come la tua, ma usa filteredEsercizi) */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredEsercizi.map((ex) => (
-                    //   <div key={ex.ID} onClick={() => setPreviewExercise(ex)} className="...">
-                    //     {/* ... Contenuto della Card ... */}
-                    //     {/* Nel tasto modifica usa: onClick={(e) => { e.stopPropagation(); handleOpenEdit(ex); }} */}
-                    //   </div>
-                    <div
-                        key={ex.ID}
-                        className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all group flex flex-col h-full cursor-pointer"
-                        onClick={() => setPreviewExercise(ex)}
-                    >
-                        <div className="flex justify-between items-start mb-6">
-                            <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl ${getBadgeStyle(ex.Tipo)}`}>
-                                {ex.Tipo}
-                            </span>
-                            <div className="flex gap-1">
-                                {[...Array(5)].map((_, i) => (
-                                    <div
-                                        key={i}
-                                        className={`w-1.5 h-1.5 rounded-full ${i < ex.Livello_Difficolta ? 'bg-orange-400' : 'bg-slate-100'}`}
-                                    />
-                                ))}
-                            </div>
-                        </div>
+                {filteredEsercizi.length == 0 ? <div className="flex flex-col items-center justify-center py-24 px-6 bg-slate-50 rounded-[4rem] border-4 border-dashed border-slate-200 text-center animate-in fade-in zoom-in duration-500">
 
-                        <h3 className="text-2xl font-black text-slate-800 mb-3 group-hover:text-blue-600 transition-colors leading-tight">
-                            {ex.Titolo}
-                        </h3>
-
-                        <p className="text-sm text-slate-700 line-clamp-3 mb-8 flex-grow leading-relaxed italic">
-                            "{ex.Descrizione || "Nessuna specifica clinica inserita."}"
-                        </p>
-
-                        <div className="pt-6 border-t border-slate-50 flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
-                            <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">REF: #{ex.ID}</span>
-                            <div className="flex gap-4">
-                                <button
-                                    onClick={() => handleOpenEdit(ex)}
-                                    className="text-[10px] font-black text-blue-600 hover:underline tracking-widest"
-                                >
-                                    MODIFICA
-                                </button>
-
-                                <button
-                                    onClick={() => setIsDeletingId(ex.ID)}
-                                    className="text-[10px] font-black text-red-400 hover:text-red-600 tracking-widest"
-                                >
-                                    ELIMINA
-                                </button>
-                            </div>
-                        </div>
+                    {/* Icona Evocativa */}
+                    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-100 mb-8">
+                        <span className="text-5xl">🧩</span>
                     </div>
-                ))}
+
+                    {/* Messaggio Principale */}
+                    <h3 className="text-3xl font-black text-slate-950 italic tracking-tight mb-3">
+                        La tua Libreria è vuota
+                    </h3>
+
+                    {/* Descrizione Secondaria */}
+                    <p className="text-slate-600 font-medium max-w-sm leading-relaxed mb-10">
+                        Non hai ancora creato esercizi personalizzati. Inizia ora per costruire un percorso di stimolazione su misura per i tuoi pazienti.
+                    </p>
+                </div> :
+                    filteredEsercizi.map((ex) => (
+                        <div
+                            key={ex.ID}
+                            className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all group flex flex-col h-full cursor-pointer"
+                            onClick={() => setPreviewExercise(ex)}
+                        >
+                            <div className="flex justify-between items-start mb-6">
+                                <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl ${getBadgeStyle(ex.Tipo)}`}>
+                                    {ex.Tipo}
+                                </span>
+                                <div className="flex gap-1">
+                                    {[...Array(5)].map((_, i) => (
+                                        <div
+                                            key={i}
+                                            className={`w-1.5 h-1.5 rounded-full ${i < ex.Livello_Difficolta ? 'bg-orange-400' : 'bg-slate-100'}`}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+
+                            <h3 className="text-2xl font-black text-slate-800 mb-3 group-hover:text-blue-600 transition-colors leading-tight">
+                                {ex.Titolo}
+                            </h3>
+
+                            <p className="text-sm text-slate-700 line-clamp-3 mb-8 flex-grow leading-relaxed italic">
+                                "{ex.Descrizione || "Nessuna specifica clinica inserita."}"
+                            </p>
+
+                            <div className="pt-6 border-t border-slate-50 flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
+                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">REF: #{ex.ID}</span>
+                                <div className="flex gap-4">
+                                    <button
+                                        onClick={() => handleOpenEdit(ex)}
+                                        className="text-[10px] font-black text-blue-600 hover:underline tracking-widest"
+                                    >
+                                        MODIFICA
+                                    </button>
+
+                                    <button
+                                        onClick={() => setIsDeletingId(ex.ID)}
+                                        className="text-[10px] font-black text-red-400 hover:text-red-600 tracking-widest"
+                                    >
+                                        ELIMINA
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
             </div>
 
             {/* MODALI (Preview e Delete) */}
