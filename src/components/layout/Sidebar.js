@@ -4,8 +4,10 @@ import { useState } from "react";
 import { useAuth } from "@/context/auth-context";
 import NavItem from "./NavItem";
 import { getNavigation } from "@/config/navigation";
+import { useRouter } from "next/navigation";
 
 export default function Sidebar() {
+  const router = useRouter();
   const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -34,7 +36,9 @@ export default function Sidebar() {
         <div className="flex flex-col h-full p-6">
           {/* Logo: Blu più scuro e font più spesso */}
           <div className="mb-10 text-2xl font-black text-blue-800 italic tracking-tighter">
-            Remind
+            <button onClick={() => router.push("/") } className="cursor-pointer">
+              Remind
+            </button>
           </div>
 
           {/* Navigazione */}
