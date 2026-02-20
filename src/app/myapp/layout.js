@@ -1,13 +1,20 @@
 import Sidebar from "@/components/layout/Sidebar";
 
-export default async function PazienteLayout({ children }) {
+export default function PatientLayout({ children }) {
   return (
-    <div className="flex min-h-screen">
-      {/* La Sidebar appare solo per le rotte in questo gruppo */}
+    // 'h-screen' blocca l'altezza alla finestra del browser
+    // 'overflow-hidden' impedisce a tutta la pagina di scrollare
+    <div className="flex h-screen overflow-hidden">
+      
+      {/* La Sidebar: grazie a h-full nel suo codice, occuperà tutta l'altezza */}
       <Sidebar />
-      <main className="flex-1 p-4 md:p-10 bg-white overflow-y-auto">
+
+      {/* Area principale: flex-1 prende lo spazio rimasto, 
+          overflow-y-auto permette lo scroll solo qui */}
+      <main className="flex-1 h-full overflow-y-auto bg-slate-50">
         {children}
       </main>
+      
     </div>
   );
 }

@@ -27,7 +27,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen-[80vh] p-4">
       {/* Card con bordo più marcato per separarsi dallo sfondo */}
       <div className="w-full max-w-md p-8 bg-white rounded-[2.5rem] shadow-2xl border border-slate-200">
         <h1 className="text-4xl font-black text-slate-950 mb-2 italic tracking-tight">

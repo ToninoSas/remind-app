@@ -95,7 +95,7 @@ export default function EditMemoryItemModal({
               <div className="w-24 h-24 rounded-2xl bg-white border border-slate-300 overflow-hidden flex items-center justify-center shrink-0">
                 {formData.tipo === "foto" ? (
                   <img
-                    src={formData.url}
+                    src={formData.url == "" ? null : formData.url}
                     className="w-full h-full object-cover"
                     alt="Anteprima"
                   />

@@ -19,7 +19,7 @@ export async function assignExerciseAction(pazienteId, esercizioId) {
       VALUES (?, ?)
     `).run(pazienteId, esercizioId);
 
-    revalidatePath(`/caregiver/pazienti/${pazienteId}`);
+    revalidatePath(`/pazienti/${pazienteId}`);
     return { success: true };
   } catch (error) {
     console.error("Errore assegnazione:", error);
@@ -33,7 +33,7 @@ export async function unassignExerciseAction(assignmentId, patientId) {
     db.prepare("DELETE FROM Assegnazioni WHERE ID = ?").run(assignmentId);
 
     // Aggiorniamo la cache della pagina del paziente
-    revalidatePath(`/caregiver/pazienti/${patientId}`);
+    revalidatePath(`/pazienti/${patientId}`);
     return { success: true };
   } catch (error) {
     console.error("Errore durante la rimozione dell'assegnazione:", error);

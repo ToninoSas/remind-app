@@ -45,7 +45,7 @@ export async function getExercisesAction(caregiverId) {
         `
       SELECT e.* FROM Esercizi e
       JOIN Caregivers c ON e.Caregiver_id = c.ID
-      WHERE c.ID = ?
+      WHERE c.ID = ? AND e.Data_Eliminazione IS NULL
       ORDER BY e.Data_Creazione DESC
     `,
       )
@@ -87,13 +87,11 @@ export async function updateExerciseAction(id, data) {
 }
 
 /**
- * Elimina un esercizio fisicamente dal database
+ * Elimina un esercizio logicamente dal database
  */
-export async function deleteExerciseAction(id) {
+export async function softDeleteExerciseAction(id) {
   try {
-    // Nota: l'eliminazione qui è fisica perché è un elemento della libreria,
-    // non un dato clinico del paziente.
-    db.prepare("DELETE FROM Esercizi WHERE ID = ?").run(id);
+    db.prepare("UPDATE Esercizi SET Data_Eliminazione = CURRENT_TIMESTAMP WHERE ID = ?").run(id);
 
     revalidatePath("/esercizi");
     return { success: true };
@@ -115,7 +113,7 @@ export async function getExerciseByIdAction(exerciseId) {
         Tipo, 
         Contenuto_Json
       FROM Esercizi 
-      WHERE ID = ?
+      WHERE ID = ? AND Data_Eliminazione IS NULL
     `,
       )
       .get(exerciseId);

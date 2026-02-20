@@ -33,7 +33,7 @@ export async function createPatientAction(data, caregiverId) {
 
   try {
     const resultId = transaction();
-    revalidatePath("/caregiver/pazienti");
+    revalidatePath("/pazienti");
     return { success: true, id: resultId };
   } catch (error) {
     console.error("Errore SQL:", error.message);
@@ -89,7 +89,7 @@ WHERE ID = ?
 
   try {
     transaction();
-    revalidatePath(`/caregiver/pazienti/${patientId}`);
+    revalidatePath(`/pazienti/${patientId}`);
     return { success: true };
   } catch (error) {
 
@@ -138,7 +138,7 @@ export async function softDeletePatientAction(patientId) {
       WHERE ID = ?
     `).run(patientId);
 
-    revalidatePath("/caregiver/pazienti");
+    revalidatePath("/pazienti");
     return { success: true };
   } catch (error) {
     return { error: "Errore durante la disattivazione." };

@@ -9,7 +9,7 @@ export default function PazienteDashboard() {
   return (
     <div className="flex flex-col items-center justify-center space-y-10 py-10">
       <h1 className="text-5xl font-black text-blue-900 text-center">
-        Ciao {user?.nome}, <br /> cosa vuoi fare?
+        Ciao {user?.Nome}, <br /> cosa vuoi fare?
       </h1>
 
       <div className="flex flex-col md:flex-col justify-center items-center gap-8 w-full max-w-2xl">

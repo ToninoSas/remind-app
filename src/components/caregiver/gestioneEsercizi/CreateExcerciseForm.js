@@ -217,9 +217,9 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
               <button
                 type="button"
                 onClick={() => removeItem(qIdx)}
-                className="absolute top-6 right-8 text-red-700 font-black text-xs uppercase hover:underline"
+                className="absolute top-3 right-12 text-red-700 font-black text-xs uppercase hover:underline"
               >
-                Elimina
+                Elimina quesito
               </button>
 
               <div className="space-y-6">
@@ -244,35 +244,76 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
 
                 {/* Media Supporto */}
                 <div className="flex items-center gap-6 p-4 bg-white border border-slate-200 rounded-2xl">
-                  <div className="flex-1">
-                    <label className="text-[10px] font-black text-slate-800 uppercase block mb-2">
-                      Immagine/Audio Supporto
-                    </label>
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                    Contenuto Multimediale (Foto, Video o Audio)
+                  </p>
+
+                  <label className="relative flex flex-col items-center justify-center w-full p-6 border-2 border-dashed border-slate-300 rounded-[2rem] bg-slate-50 hover:bg-blue-50 hover:border-blue-300 transition-all cursor-pointer group">
+                    {/* Input nascosto, ma funzionale */}
                     <input
                       type="file"
+                      accept="image/*,video/*,audio/*"
+                      className="hidden"
                       onChange={async (e) => {
                         const file = e.target.files[0];
                         if (!file) return;
+
+                        // Feedback visivo immediato (opzionale se hai lo stato)
+                        // setIsUploading(true); 
+
                         const formData = new FormData();
                         formData.append("file", file);
+
                         const res = await uploadMediaAction(formData);
+
                         if (res.success) {
                           const ni = [...items];
                           ni[qIdx].media = {
                             url: res.url,
-                            tipo: file.type.split("/")[0],
+                            tipo: file.type.split("/")[0], // 'image', 'video' o 'audio'
                           };
                           setItems(ni);
                         }
+                        // setIsUploading(false);
                       }}
-                      className="text-xs text-slate-950 font-bold"
                     />
-                  </div>
+
+                    {/* Interfaccia del Pulsante */}
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                        <span className="text-2xl">📤</span>
+                      </div>
+                      <div className="text-center">
+                        <span className="block text-sm font-black text-slate-950 uppercase tracking-tight">
+                          Scegli un file
+                        </span>
+                        <span className="text-[10px] text-slate-500 font-bold uppercase">
+                          Trascina qui o clicca per sfogliare
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Overlay per il caricamento (mostrare solo se isUploading è true) */}
+                    {/* isUploading && (
+      <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-[2rem] flex items-center justify-center">
+         <span className="animate-spin text-2xl">⏳</span>
+      </div>
+    ) */}
+                  </label>
+
+                  {/* Feedback se il file è già presente */}
+                  {items[qIdx].media?.url && (
+                    <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-100 rounded-xl w-fit">
+                      <span className="text-xs text-green-700 font-black uppercase tracking-widest">
+                        ✅ File caricato con successo
+                      </span>
+                    </div>
+                  )}
                   {item.media && (
                     <Image
-                    alt="Media di supporto"
-                    width={30}
-                    height={30}
+                      alt="Media di supporto"
+                      width={30}
+                      height={30}
                       src={item.media.url}
                       className="w-20 h-20 rounded-xl object-cover border-2 border-slate-300"
                     />
@@ -311,11 +352,10 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
                             !ni[qIdx].opzioni[oIdx].isCorretta;
                           setItems(ni);
                         }}
-                        className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center font-black transition-all ${
-                          opt.isCorretta
+                        className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center font-black transition-all ${opt.isCorretta
                             ? "bg-green-600 border-green-700 text-white"
                             : "bg-white border-slate-300 text-slate-200"
-                        }`}
+                          }`}
                       >
                         {opt.isCorretta ? "✓" : ""}
                       </button>
@@ -370,8 +410,8 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
           {loading
             ? "SALVATAGGIO..."
             : initialData
-            ? "AGGIORNA ESERCIZIO"
-            : "PUBBLICA NELLA LIBRERIA"}
+              ? "AGGIORNA ESERCIZIO"
+              : "PUBBLICA NELLA LIBRERIA"}
         </button>
       </div>
     </form>

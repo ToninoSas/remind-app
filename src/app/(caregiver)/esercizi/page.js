@@ -11,8 +11,6 @@ export default async function EserciziPage({ searchParams }) {
   // 2. Recuperiamo gli esercizi dal server
   const esercizi = await getExercisesAction(profileId);
 
-  console.log(esercizi);
-
   // 3. Passiamo tutto al componente Client
   return (
     <LibreriaEsercizi 

@@ -9,7 +9,7 @@ export default function PaginaPaziente({ data, patientId, activeTab }) {
     // ... (Tutte le altre funzioni handle rimangono simili)
 
     return (
-        <div className="max-w-5xl mx-auto space-y-6 pb-20">
+        <div className="max-w-5xl mx-auto space-y-6 pb-20 p-8">
             <Link
                 href={`/pazienti`}
                 className="block mb-6 text-[10px] font-black text-slate-700 hover:text-blue-700 uppercase tracking-widest border border-slate-300 px-4 py-2 rounded-xl bg-white shadow-sm transition-all"
@@ -65,7 +65,7 @@ export default function PaginaPaziente({ data, patientId, activeTab }) {
             </div>
 
             {/* Contenuto Dinamico - Bordo Slate 300 */}
-            <div className="bg-white p-8 rounded-[3rem] shadow-md border border-slate-300 min-h-[450px]">
+            <div className="bg-white p-8 rounded-[3rem] shadow-md border border-slate-300 min-h-screen-[450px]">
                 {activeTab === "anagrafica" && (<AnagraficaPaziente data={data} patientId={patientId} />)
                 }
 

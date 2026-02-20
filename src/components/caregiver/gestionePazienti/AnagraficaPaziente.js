@@ -209,7 +209,6 @@ export default function AnagraficaPaziente({ data, patientId }) {
                         </h3>
                         <p className="text-slate-800 text-sm font-bold mb-10 leading-relaxed italic">
                             Il profilo di <strong>{data.info.Nome}</strong> verrà disattivato.
-                            Potrai recuperarlo contattando l'assistenza database.
                         </p>
                         <div className="flex gap-4">
                             <button

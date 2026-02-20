@@ -26,7 +26,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[90vh] py-10">
+    <div className="flex flex-col items-center justify-center min-h-screen-[90vh] py-10">
       <div className="w-full max-w-md p-8 bg-white rounded-[2.5rem] shadow-xl border border-slate-200">
         <h1 className="text-3xl font-black text-slate-950 mb-2 italic">
           Inizia ora

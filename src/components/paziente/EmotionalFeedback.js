@@ -47,7 +47,7 @@ export default function EmotionalFeedback({ onSelect }) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-12 p-6 animate-in fade-in zoom-in duration-500">
+    <div className="flex flex-col items-center justify-center min-h-screen-[60vh] space-y-12 p-6 animate-in fade-in zoom-in duration-500">
       {/* Domanda diretta e semplice */}
       <div className="text-center space-y-4">
         <h2 className="text-5xl font-black text-slate-950 tracking-tight leading-tight">

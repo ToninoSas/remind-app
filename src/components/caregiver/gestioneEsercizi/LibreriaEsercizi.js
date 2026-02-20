@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { deleteExerciseAction } from "@/actions/excercises";
+import { softDeleteExerciseAction } from "@/actions/excercises";
 import CreateExerciseForm from "@/components/caregiver/gestioneEsercizi/CreateExcerciseForm";
 import ExercisePreview from "@/components/caregiver/gestioneEsercizi/ExercisePreview";
 
@@ -30,7 +30,7 @@ export default function LibreriaEsercizi({ initialEsercizi, activeFilter }) {
     };
 
     const handleDelete = async (id) => {
-        const res = await deleteExerciseAction(id);
+        const res = await softDeleteExerciseAction(id);
         if (res.success) {
             setIsDeletingId(null);
             router.refresh(); // Ricarica i dati dal Server Component
@@ -144,7 +144,7 @@ export default function LibreriaEsercizi({ initialEsercizi, activeFilter }) {
                 <div className="bg-white p-10 rounded-[3rem] shadow-2xl max-w-sm w-full text-center animate-in zoom-in duration-300">
                     <h3 className="text-2xl font-black text-slate-800 mb-2">Eliminare?</h3>
                     <p className="text-slate-700 text-sm font-medium mb-10 leading-relaxed italic">
-                        L'esercizio verrà rimosso permanentemente dalla libreria.
+                        L'esercizio verrà rimosso dalla libreria.
                     </p>
                     <div className="flex gap-4">
                         <button

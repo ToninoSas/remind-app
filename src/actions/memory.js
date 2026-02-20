@@ -41,7 +41,7 @@ export async function createMemoryBoxAction(pazienteId, caregiverId, data) {
       )
       .run(titolo, descrizione, categoria, pazienteId, caregiverId);
 
-    revalidatePath(`/caregiver/pazienti/${pazienteId}/ricordi`);
+    revalidatePath(`/pazienti/${pazienteId}/ricordi`);
     return { success: true, id: res.lastInsertRowid };
   } catch (e) {
     return { error: "Errore nella creazione del box." };
@@ -59,7 +59,7 @@ export async function updateMemoryBoxAction(boxId, data, pazienteId) {
     `,
     ).run(titolo, descrizione, categoria, boxId);
 
-    revalidatePath(`/caregiver/pazienti/${pazienteId}/ricordi/${boxId}`);
+    revalidatePath(`/pazienti/${pazienteId}/ricordi/${boxId}`);
     return { success: true };
   } catch (e) {
     return { error: "Errore nell'aggiornamento del box." };
@@ -73,7 +73,7 @@ export async function deleteMemoryBoxAction(boxId, pazienteId) {
     // 2. Eliminiamo logicamente il box
     db.prepare("UPDATE Memory_boxs SET Data_Eliminazione = CURRENT_TIMESTAMP WHERE ID = ?").run(boxId);
 
-    revalidatePath(`/caregiver/pazienti/${pazienteId}/ricordi`);
+    revalidatePath(`/pazienti/${pazienteId}/ricordi`);
     return { success: true };
   } catch (e) {
     console.error(e);
@@ -114,7 +114,7 @@ export async function updateMemoryItemAction(itemId, data, boxId, pazienteId) {
     `,
     ).run(titolo, testo, luogo, datazione, url, tipo, itemId);
 
-    revalidatePath(`/caregiver/pazienti/${pazienteId}/ricordi/${boxId}`);
+    revalidatePath(`/pazienti/${pazienteId}/ricordi/${boxId}`);
     return { success: true };
   } catch (e) {
     return { error: "Errore nell'aggiornamento del ricordo." };
@@ -127,7 +127,7 @@ export async function deleteMemoryItemAction(itemId, boxId, pazienteId) {
     db.prepare("UPDATE Memory_items SET Data_Eliminazione = CURRENT_TIMESTAMP WHERE ID = ?").run(itemId);
     
     // Ricarichiamo la pagina del box
-    revalidatePath(`/caregiver/pazienti/${pazienteId}/ricordi/${boxId}`);
+    revalidatePath(`/pazienti/${pazienteId}/ricordi/${boxId}`);
     return { success: true };
   } catch (e) {
     console.error(e);

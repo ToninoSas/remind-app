@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS "Esercizi" (
 	"Livello_Difficolta"	INTEGER,
 	"Contenuto_Json"	TEXT,
 	"Data_Creazione"	DATETIME DEFAULT CURRENT_TIMESTAMP,
+	"Data_Eliminazione"	DATETIME DEFAULT NULL,
 	"Caregiver_id"	INTEGER NOT NULL,
 	PRIMARY KEY("ID" AUTOINCREMENT),
 	FOREIGN KEY("Caregiver_id") REFERENCES "Caregivers"("ID") ON DELETE CASCADE

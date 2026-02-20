@@ -1,73 +1,68 @@
-"use client";
-import React, { useState, useEffect } from "react";
+import { cookies } from "next/headers";
 import Link from "next/link";
-import { useAuth } from "@/context/auth-context";
 import { getMemoryBoxesAction } from "@/actions/memory";
 
-export default function GalleriaRicordiPaziente() {
-  const { user } = useAuth();
-  const [boxes, setBoxes] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default async function GalleriaRicordiPazientePage() {
+  // 1. Recupero dell'identità dal cookie sicuro
+  const cookieStore = await cookies();
+  const profileId = cookieStore.get("profile-id")?.value;
 
-  useEffect(() => {
-    async function load() {
-      if (user?.ProfileID) {
-        // Recuperiamo i box attivi del paziente
-        const data = await getMemoryBoxesAction(user.ProfileID);
-        setBoxes(data);
-      }
-      setLoading(false);
-    }
-    load();
-  }, [user]);
+  // 2. Caricamento immediato dei box dal database
+  const boxes = profileId 
+    ? await getMemoryBoxesAction(profileId) 
+    : [];
 
   return (
-    <div className="min-h-screen bg-white p-8">
+    <div className="min-h-screen bg-white p-8 animate-in fade-in duration-1000">
+      {/* Header di navigazione ultra-semplice */}
       <header className="max-w-6xl mx-auto flex justify-between items-center mb-16">
         <Link
           href="/myapp"
-          className="text-2xl font-black text-slate-500 hover:text-slate-950"
+          className="text-2xl font-black text-slate-400 hover:text-slate-950 transition-colors"
         >
-          ← ESCI
+          ← TORNA ALL'INIZIO
         </Link>
         <h1 className="text-5xl font-black text-slate-950 italic tracking-tighter">
           I tuoi ricordi
         </h1>
-        <div className="w-20"></div>
+        <div className="w-20"></div> {/* Bilanciamento ottico */}
       </header>
 
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
-        {loading ? (
-          <p className="col-span-2 text-center text-3xl font-bold text-slate-400 animate-pulse">
-            Apro lo scrigno...
-          </p>
-        ) : boxes.length > 0 ? (
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+        {boxes && boxes.length > 0 ? (
           boxes.map((box) => (
             <Link
               key={box.ID}
               href={`/myapp/ricordi/${box.ID}`}
-              className="group relative bg-white border-8 border-slate-100 rounded-[4rem] overflow-hidden shadow-2xl hover:border-purple-600 transition-all aspect-[4/3] flex flex-col"
+              className="group relative bg-white border-[10px] border-slate-100 rounded-[5rem] overflow-hidden shadow-2xl hover:border-purple-600 hover:scale-[1.02] transition-all aspect-[4/3] flex flex-col"
             >
-              {/* Preview - Se il box avesse una copertina, andrebbe qui. Altrimenti usiamo un'icona */}
-              <div className="flex-1 bg-purple-50 flex items-center justify-center">
-                <span className="text-9xl group-hover:scale-110 transition-transform">
-                  📸
+              {/* Parte Superiore: Icona evocativa */}
+              <div className="flex-1 bg-purple-50 flex items-center justify-center relative overflow-hidden">
+                <span className="text-[10rem] group-hover:scale-125 transition-transform duration-500 z-10">
+                  {box.Categoria === "Famiglia" ? "👨‍👩‍👧‍👦" : 
+                   box.Categoria === "Viaggi" ? "🌍" : "📸"}
                 </span>
+                {/* Decorazione di sfondo per rendere il box più "prezioso" */}
+                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle,purple_1px,transparent_1px)] bg-[size:20px_20px]"></div>
               </div>
-              <div className="p-10 bg-white border-t-4 border-slate-100">
-                <p className="text-xs font-black text-purple-700 uppercase tracking-[0.3em] mb-2">
+
+              {/* Parte Inferiore: Testo leggibile */}
+              <div className="p-10 bg-white border-t-4 border-slate-100 flex flex-col justify-center">
+                <p className="text-sm font-black text-purple-700 uppercase tracking-[0.4em] mb-2">
                   {box.Categoria}
                 </p>
-                <h2 className="text-4xl font-black text-slate-950 uppercase">
+                <h2 className="text-4xl font-black text-slate-950 uppercase leading-none">
                   {box.Titolo}
                 </h2>
               </div>
             </Link>
           ))
         ) : (
-          <div className="col-span-2 text-center py-20 bg-slate-50 rounded-[4rem] border-4 border-dashed border-slate-200">
-            <p className="text-3xl font-black text-slate-400 italic">
-              Il tuo caregiver non ha ancora <br /> aggiunto dei ricordi per te.
+          /* Stato Vuoto: Messaggio rassicurante */
+          <div className="col-span-full text-center py-32 bg-slate-50 rounded-[5rem] border-8 border-dashed border-slate-200">
+            <span className="text-8xl block mb-6 opacity-30">📂</span>
+            <p className="text-3xl font-black text-slate-400 italic leading-relaxed">
+              Non sono presenti al momento ricordi per te
             </p>
           </div>
         )}
