@@ -2,24 +2,25 @@
 import { useMemo } from "react";
 
 export default function StatistichePaziente({ stats }) {
+  console.log("Stats ricevuti in PatientStatistics:", stats);
   const metrics = useMemo(() => {
     // Controllo di sicurezza se stats è nullo o vuoto
     if (!stats || stats.length === 0) return null;
 
     // ATTENZIONE: Usiamo i nomi esatti delle colonne del DB (Risposte_totali, etc.)
     const total = stats.reduce(
-      (acc, curr) => acc + (Number(curr.Risposte_totali) || 0),
+      (acc, curr) => acc + (Number(curr.Total_Answers) || 0),
       0,
     );
     const correct = stats.reduce(
-      (acc, curr) => acc + (Number(curr.Risposte_corrette) || 0),
+      (acc, curr) => acc + (Number(curr.Correct_Answers) || 0),
       0,
     );
 
     // Calcolo umore medio
-    const validMoods = stats.filter((s) => s.Stato_Emotivo !== null);
+    const validMoods = stats.filter((s) => s.Emotional_State !== null);
     const moodSum = validMoods.reduce(
-      (acc, curr) => acc + curr.Stato_Emotivo,
+      (acc, curr) => acc + curr.Emotional_State,
       0,
     );
     const moodAvg =

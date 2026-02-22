@@ -168,20 +168,20 @@ export default function ExercisePreview({ esercizio, onClose }) {
                   {/* Media Supporto */}
                   {q.media?.url && (
                     <div className="rounded-[2.5rem] border border-slate-300 bg-white p-6 flex justify-center shadow-inner">
-                      {q.media.Type === "image" && (
+                      {q.media.tipo === "image" && (
                         <img
                           src={q.media.url}
                           className="max-h-72 rounded-2xl shadow-md border-4 border-slate-50"
                         />
                       )}
-                      {q.media.Type === "audio" && (
+                      {q.media.tipo === "audio" && (
                         <audio
                           controls
                           src={q.media.url}
                           className="w-full max-w-md"
                         />
                       )}
-                      {q.media.Type === "video" && (
+                      {q.media.tipo === "video" && (
                         <video
                           controls
                           src={q.media.url}
@@ -203,7 +203,7 @@ export default function ExercisePreview({ esercizio, onClose }) {
                         }`}
                       >
                         <span className="font-black text-base">
-                          {opt.text}
+                          {opt.testo}
                         </span>
                         {opt.isCorretta && <span className="text-xl">✅</span>}
                       </div>

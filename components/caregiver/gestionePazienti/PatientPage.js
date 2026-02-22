@@ -4,8 +4,6 @@ import EserciziPaziente from "./PatientExercises";
 import AnagraficaPaziente from "./PatientRegistry";
 
 export default function PaginaPaziente({ data, patientId, activeTab }) {
-    console.log("Dati paziente ricevuti in PatientPage:", data);
-    console.log("ID paziente:", patientId);
 
     // ... (Tutte le altre funzioni handle rimangono simili)
 

@@ -49,7 +49,6 @@ export default function EsecuzioneEsercizio({ params }) {
       totali: stats.totali,
       corrette: stats.corrette,
       sbagliate: stats.sbagliate,
-      completato: true,
       statoEmotivo: statoEmotivo,
     });
     setStep("fine");
@@ -83,8 +82,8 @@ export default function EsecuzioneEsercizio({ params }) {
     return <EmotionalFeedback onSelect={handleFinalSave} />;
 
   // Parsing del contenuto JSON per Quiz e Calcolo
-  const contenuto = esercizio?.Contenuto_Json
-    ? JSON.parse(esercizio.Contenuto_Json)
+  const contenuto = esercizio?.Content_Json
+    ? JSON.parse(esercizio.Content_Json)
     : null;
 
   return (
@@ -97,13 +96,13 @@ export default function EsecuzioneEsercizio({ params }) {
           CHIUDI X
         </button>
         <h2 className="text-2xl font-black text-slate-950 uppercase tracking-widest">
-          {esercizio?.Titolo}
+          {esercizio?.Title}
         </h2>
         <div className="w-20"></div>
       </header>
 
       <main className="max-w-5xl mx-auto">
-        {esercizio?.Tipo === "quiz" && (
+        {esercizio?.Type === "quiz" && (
           <QuizPlayer
             items={contenuto.items}
             onStepComplete={(isCorr) => {
@@ -115,7 +114,7 @@ export default function EsecuzioneEsercizio({ params }) {
           />
         )}
 
-        {esercizio?.Tipo === "calcolo" && (
+        {esercizio?.Type === "calcolo" && (
           <CalcoloPlayer
             items={contenuto.items}
             onStepComplete={(isCorr) => {
@@ -127,7 +126,7 @@ export default function EsecuzioneEsercizio({ params }) {
           />
         )}
 
-        {esercizio?.Tipo === "memoria" && (
+        {esercizio?.Type === "memoria" && (
           <MemoryPlayer
             numeroCoppie={contenuto.numeroCoppie}
             onComplete={(totali, sbagliate) => {

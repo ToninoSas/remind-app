@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { deleteMemoryItemAction, deleteMemoryBoxAction } from "@/actions/memory";
+import { deleteMemoryItemAction, deleteMemoryBoxAction } from "@/lib/actions/memory";
 
 import PatientContextBanner from "@/components/caregiver/gestioneRicordi/PatientContextBanner";
 import AddMemoryItemModal from "@/components/caregiver/gestioneRicordi/AddMemoryItemModal";

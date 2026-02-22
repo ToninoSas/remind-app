@@ -97,12 +97,14 @@ export default function AddPatientForm() {
           <div className="grid grid-cols-2 gap-4">
             <input
               name="nome"
+              value={formData.nome}
               placeholder="Nome"
               onChange={handleChange}
               className="p-4 bg-white border border-slate-300 rounded-2xl text-slate-950 font-bold outline-none focus:ring-2 focus:ring-blue-600 placeholder:text-slate-500"
             />
             <input
               name="cognome"
+              value={formData.cognome}
               placeholder="Cognome"
               onChange={handleChange}
               className="p-4 bg-white border border-slate-300 rounded-2xl text-slate-950 font-bold outline-none focus:ring-2 focus:ring-blue-600 placeholder:text-slate-500"
@@ -110,6 +112,7 @@ export default function AddPatientForm() {
           </div>
           <select
             name="patologia"
+            value={formData.patologia}
             onChange={handleChange}
             className="w-full p-4 bg-white border border-slate-300 rounded-2xl text-slate-950 font-black outline-none focus:ring-2 focus:ring-blue-600"
           >
@@ -121,6 +124,7 @@ export default function AddPatientForm() {
           <textarea
             name="descrizione"
             placeholder="Note cliniche..."
+            value={formData.descrizione}
             rows="4"
             onChange={handleChange}
             className="w-full p-4 bg-white border border-slate-300 rounded-2xl text-slate-950 font-medium italic outline-none focus:ring-2 focus:ring-blue-600 resize-none placeholder:text-slate-500"
@@ -165,6 +169,7 @@ export default function AddPatientForm() {
               <input
                 name="emailAccesso"
                 type="email"
+                value={formData.emailAccesso}
                 required
                 onChange={handleChange}
                 placeholder="paziente@mail.it"
