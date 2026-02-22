@@ -7,7 +7,7 @@ import { CardSkeleton } from "@/app/ui/skeletons";
 export default async function ListaPazientiPage() {
   return (
     <div className="min-h-screen bg-white p-8">
-      <header className="max-w-7xl mx-auto flex justify-between items-center mb-12">
+      <header className="max-w-7xl mx-auto flex justify-between items-center mb-12 p-8">
         <div>
           <h1 className="text-5xl font-black italic tracking-tighter text-slate-950">
             I Tuoi Pazienti
