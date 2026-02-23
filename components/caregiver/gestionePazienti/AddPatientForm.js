@@ -97,6 +97,7 @@ export default function AddPatientForm() {
           <div className="grid grid-cols-2 gap-4">
             <input
               name="nome"
+              type="email"
               value={formData.nome}
               placeholder="Nome"
               onChange={handleChange}
@@ -104,6 +105,7 @@ export default function AddPatientForm() {
             />
             <input
               name="cognome"
+              type="text"
               value={formData.cognome}
               placeholder="Cognome"
               onChange={handleChange}
