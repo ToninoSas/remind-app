@@ -5,6 +5,7 @@ import { useAuth } from "@/context/auth-context";
 import NavItem from "./NavItem";
 import { getNavigation } from "@/config/navigation";
 import { useRouter } from "next/navigation";
+import { logoutAction } from "@/lib/actions/auth";
 
 export default function Sidebar() {
   const router = useRouter();
@@ -70,15 +71,12 @@ export default function Sidebar() {
               </div>
             </div>
 
-            <button onClick={() => { setIsOpen(false); // chiudi subito la sidebar 
-              router.replace("/"); //da rivedere
-              router.refresh();
-              logout(); 
-               }}
-              className="w-full text-left p-4 text-red-700 bg-red-50 hover:bg-red-100 rounded-2xl transition-all font-black text-xs uppercase tracking-widest border border-red-100"
-            >
-              Esci dall'account
-            </button>
+            {/* LOGOUT SERVER-SIDE */}
+            <form action={logoutAction}>
+              <button className="w-full text-left p-4 text-red-700 bg-red-50 hover:bg-red-100 rounded-2xl transition-all font-black text-xs uppercase tracking-widest border border-red-100">
+                Esci dall'account
+              </button>
+            </form>
           </div>
         </div>
       </aside>
