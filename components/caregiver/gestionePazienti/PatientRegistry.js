@@ -151,6 +151,7 @@ export default function AnagraficaPaziente({ data, patientId }) {
                                 onChange={(e) =>
                                     setEditData({ ...editData, nome: e.target.value })
                                 }
+                                required
                                 className="w-full p-4 bg-white border border-slate-300 text-slate-950 font-bold rounded-2xl mt-1 outline-none focus:ring-2 focus:ring-blue-600"
                             />
                         </div>
@@ -163,6 +164,7 @@ export default function AnagraficaPaziente({ data, patientId }) {
                                 onChange={(e) =>
                                     setEditData({ ...editData, cognome: e.target.value })
                                 }
+                                required
                                 className="w-full p-4 bg-white border border-slate-300 text-slate-950 font-bold rounded-2xl mt-1 outline-none focus:ring-2 focus:ring-blue-600"
                             />
                         </div>
