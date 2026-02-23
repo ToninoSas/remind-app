@@ -43,7 +43,13 @@ export default function AnagraficaPaziente({ data, patientId }) {
     };
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
+        <form 
+            onSubmit={(e) => {
+                e.preventDefault();
+                handleSave();
+            }} 
+             className="space-y-8 animate-in fade-in duration-500"
+            >
             {showSuccess && (
                 <div className="fixed top-10 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-4 duration-300">
                     <div className="bg-slate-950 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-700">
@@ -60,6 +66,7 @@ export default function AnagraficaPaziente({ data, patientId }) {
                 </h3>
                 {!isEditing ? (
                     <button
+                        type="button"
                         onClick={() => setIsEditing(true)}
                         className="bg-slate-100 text-slate-800 border border-slate-300 px-4 py-2 rounded-xl font-black text-xs hover:bg-blue-50 hover:text-blue-800 transition-all"
                     >
@@ -68,13 +75,14 @@ export default function AnagraficaPaziente({ data, patientId }) {
                 ) : (
                     <div className="flex gap-3">
                         <button
+                            type="button"
                             onClick={() => setIsEditing(false)}
                             className="text-slate-800 font-black text-xs uppercase px-4"
                         >
                             Annulla
                         </button>
                         <button
-                            onClick={handleSave}
+                            type="submit"
                             className="bg-blue-700 text-white px-6 py-2 rounded-xl font-black text-xs shadow-lg"
                         >
                             SALVA
@@ -153,6 +161,8 @@ export default function AnagraficaPaziente({ data, patientId }) {
                                 Email Accesso
                             </label>
                             <input
+                                type="email"
+                                required
                                 value={editData.email}
                                 onChange={(e) =>
                                     setEditData({ ...editData, email: e.target.value })
@@ -191,6 +201,7 @@ export default function AnagraficaPaziente({ data, patientId }) {
                         </p>
                     </div>
                     <button
+                        type="button"
                         onClick={() => setIsDeleting(true)}
                         className="whitespace-nowrap bg-white text-red-700 border-2 border-red-300 px-8 py-3 rounded-2xl font-black text-xs hover:bg-red-700 hover:text-white transition-all shadow-md"
                     >
@@ -212,12 +223,14 @@ export default function AnagraficaPaziente({ data, patientId }) {
                         </p>
                         <div className="flex gap-4">
                             <button
+                                type="button"
                                 onClick={() => setIsDeleting(false)}
                                 className="flex-1 py-4 font-black text-slate-800 uppercase text-xs tracking-widest hover:bg-slate-100 rounded-2xl"
                             >
                                 Chiudi
                             </button>
                             <button
+                                type="button"
                                 onClick={handleDelete}
                                 className="flex-1 py-4 bg-red-700 text-white font-black rounded-2xl text-xs uppercase tracking-widest shadow-lg shadow-red-200"
                             >
@@ -227,7 +240,7 @@ export default function AnagraficaPaziente({ data, patientId }) {
                     </div>
                 </div>
             )}
-        </div>
+        </form>
 
     );
 }
