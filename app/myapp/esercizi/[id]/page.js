@@ -7,7 +7,7 @@ import { saveSvolgimentoAction } from "@/lib/actions/paziente";
 
 // Importiamo i player specifici che abbiamo creato
 import QuizPlayer from "@/components/paziente/QuizPlayer";
-import CalcoloPlayer from "@/components/paziente/CalcoloPlayer";
+import CalcoloPlayer from "@/components/paziente/CalculatePlayer";
 import MemoryPlayer from "@/components/paziente/MemoryPlayer";
 import EmotionalFeedback from "@/components/paziente/EmotionalFeedback";
 

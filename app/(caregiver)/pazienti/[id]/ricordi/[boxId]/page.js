@@ -1,6 +1,6 @@
 import { getDetailedPatientAction } from "@/lib/actions/patients";
 import { getMemoryBoxDetailAction } from "@/lib/actions/memory";
-import DettaglioBox from "@/components/caregiver/gestioneRicordi/PaginaRicordi";
+import DettaglioBox from "@/components/caregiver/gestioneRicordi/MemoriesPage";
 import { notFound } from "next/navigation";
 
 export default async function DettaglioBoxPage({ params }) {
