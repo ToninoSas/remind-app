@@ -1,5 +1,5 @@
 import { getMemoryBoxDetailAction } from "@/lib/actions/memory";
-import VisualizzatoreRicordi from "@/components/paziente/VisualizzatoreRicordi";
+import VisualizzatoreRicordi from "@/components/paziente/ViewerMemories";
 import Link from "next/link";
 
 export default async function VisualizzatorePage({ params }) {

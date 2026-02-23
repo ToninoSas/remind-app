@@ -116,10 +116,8 @@ export default function AnagraficaPaziente({ data, patientId }) {
                                 {data.info.Condition}
                             </p>
                             <p className="text-slate-800 leading-relaxed italic font-medium">
-                                "
                                 {data.info.Description ||
                                     "Nessuna nota descrittiva presente."}
-                                "
                             </p>
                         </div>
                     </div>
