@@ -42,6 +42,20 @@ export default function AnagraficaPaziente({ data, patientId }) {
         }
     };
 
+    const handleCancel = () => {
+        // 1. Chiude il form
+        setIsEditing(false); 
+        
+        // 2. Resetta la memoria (editData) con i dati originali del database
+        setEditData({
+            nome: data.info.First_Name,
+            cognome: data.info.Last_Name,
+            email: data.info.Email,
+            patologia: data.info.Condition,
+            descrizione: data.info.Description,
+        });
+    };
+
     return (
         <form 
             onSubmit={(e) => {
@@ -76,7 +90,7 @@ export default function AnagraficaPaziente({ data, patientId }) {
                     <div className="flex gap-3">
                         <button
                             type="button"
-                            onClick={() => setIsEditing(false)}
+                            onClick={handleCancel}
                             className="text-slate-800 font-black text-xs uppercase px-4"
                         >
                             Annulla
