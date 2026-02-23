@@ -1,5 +1,5 @@
 import { getDetailedPatientAction } from "@/lib/actions/patients";
-import PaginaPaziente from "@/components/caregiver/gestionePazienti/PatientPage";
+import PaginaPaziente from "@/components/caregiver/gestionePazienti/PatientInfo";
 import { notFound } from "next/navigation";
 
 export default async function SchedaPazientePage({ params, searchParams }) {
