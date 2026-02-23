@@ -4,7 +4,7 @@ export default function PatientLayout({ children }) {
   return (
     // 'h-screen' blocca l'altezza alla finestra del browser
     // 'overflow-hidden' impedisce a tutta la pagina di scrollare
-    <div className="flex flex-col lg:flex-row min-h-screen overflow-hidden">
+    <div className="flex flex-col lg:flex-row min-h-screen overflow-hidden bg-white">
       {/* La Sidebar: grazie a h-full nel suo codice, occuperà tutta l'altezza */}
       <Sidebar />
 
