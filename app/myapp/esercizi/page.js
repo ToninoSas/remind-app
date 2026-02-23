@@ -38,7 +38,7 @@ export default async function ListaEserciziPazientePage() {
               className="flex items-center justify-between p-6 bg-white border-[10px] border-slate-100 rounded-[4rem] shadow-2xl hover:border-blue-600 hover:scale-[1.02] transition-all group"
             >
               <div className="flex items-center gap-10">
-                <span className="text-[7rem] group-hover:rotate-12 transition-transform duration-300">
+                <span className="text-[5rem] group-hover:rotate-12 transition-transform duration-300">
                   {ex.Type === "quiz"
                     ? "🧩"
                     : ex.Type === "calcolo"
@@ -46,7 +46,7 @@ export default async function ListaEserciziPazientePage() {
                       : "🧠"}
                 </span>
                 <div>
-                  <h2 className="text-5xl font-black text-slate-950 leading-none">
+                  <h2 className="text-4xl font-black text-slate-950 leading-none">
                     {ex.Title}
                   </h2>
                   <p className="text-2xl font-bold text-slate-400 uppercase mt-4 tracking-widest">
@@ -63,8 +63,8 @@ export default async function ListaEserciziPazientePage() {
         ) : (
           /* Stato Vuoto: Messaggio di Rinforzo Positivo */
           <div className="text-center py-32 bg-green-50 rounded-[5rem] border-8 border-dashed border-green-200">
-            <span className="text-9xl block mb-8">🌟</span>
-            <h3 className="text-5xl font-black text-green-900 mb-4">
+            <span className="text-7xl block mb-8">🌟</span>
+            <h3 className="text-4xl font-black text-green-900 mb-4">
               OTTIMO LAVORO!
             </h3>
             <p className="text-2xl font-bold text-green-700 italic max-w-md mx-auto leading-relaxed">

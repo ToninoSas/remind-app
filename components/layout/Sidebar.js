@@ -9,7 +9,7 @@ import { logoutAction } from "@/lib/actions/auth";
 
 export default function Sidebar() {
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
   if (!user) return null;
@@ -18,47 +18,61 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile Header: Usiamo un blu più profondo per il contrasto */}
-      <header className="lg:hidden flex items-center justify-between p-4 bg-blue-800 text-white shadow-md">
-        <h1 className="text-xl font-black italic tracking-tight">Remind</h1>
-        <button onClick={() => setIsOpen(true)} className="p-2 text-3xl">
+      {/* MOBILE HEADER: 
+          - flex-row esplicito per evitare il wrap
+          - w-full per occupare tutto lo spazio
+          - sticky per rimanere in alto mentre si scorre
+      */}
+      <header className="lg:hidden flex flex-row items-center justify-between w-full p-4 bg-blue-800 text-white shadow-md sticky top-0 z-[60]">
+        <button
+          onClick={() => router.push("/")}
+          className="text-xl font-black italic tracking-tight cursor-pointer"
+        >
+          Remind
+        </button>
+
+        <button
+          onClick={() => setIsOpen(true)}
+          className="p-2 text-3xl leading-none focus:outline-none"
+          aria-label="Apri menu"
+        >
           ☰
         </button>
       </header>
 
-      {/* Sidebar: Forziamo il bordo e lo sfondo bianco puro */}
+      {/* SIDEBAR (ASIDE): 
+          - Rimane colonna (flex-col) perché è un menu verticale
+      */}
       <aside
         className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-300 transform transition-transform duration-300
-        lg:translate-x-0 lg:static lg:inset-0
-        ${isOpen ? "translate-x-0" : "-translate-x-full"}
-      `}
+          fixed inset-y-0 left-0 z-[100] w-64 bg-white border-r border-slate-300 transform transition-transform duration-300 ease-in-out
+          lg:translate-x-0 lg:static lg:inset-0
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+        `}
       >
         <div className="flex flex-col h-full p-6">
-          {/* Logo: Blu più scuro e font più spesso */}
-          <div className="mb-10 text-2xl font-black text-blue-800 italic tracking-tighter">
-            <button onClick={() => router.push("/") } className="cursor-pointer">
+          {/* Logo Desktop */}
+          <div className="hidden lg:block mb-10 text-2xl font-black text-blue-800 italic tracking-tighter">
+            <button onClick={() => router.push("/")} className="cursor-pointer">
               Remind
             </button>
           </div>
 
-          {/* Navigazione */}
+          {/* Navigazione interna */}
           <nav className="flex-1 space-y-3">
             {navItems.map((item) => (
               <NavItem
                 key={item.name}
                 item={item}
                 onClick={() => setIsOpen(false)}
-                // Assicurati che NavItem usi internamente text-slate-700 o 900
               />
             ))}
           </nav>
 
-          {/* Profilo e Logout: Aumentiamo il contrasto dei testi secondari */}
+          {/* Footer Sidebar: Profilo e Logout */}
           <div className="mt-auto pt-6 border-t border-slate-200">
             <div className="flex items-center gap-3 mb-6 p-2">
-              {/* Avatar più visibile */}
-              <div className="w-10 h-10 rounded-xl bg-slate-300 flex items-center justify-center font-black text-slate-700">
+              <div className="w-10 h-10 rounded-xl bg-slate-300 flex items-center justify-center font-black text-slate-700 shrink-0">
                 {user.Nome?.[0]}
               </div>
               <div className="overflow-hidden">
@@ -71,9 +85,8 @@ export default function Sidebar() {
               </div>
             </div>
 
-            {/* LOGOUT SERVER-SIDE */}
             <form action={logoutAction}>
-              <button className="w-full text-left p-4 text-red-700 bg-red-50 hover:bg-red-100 rounded-2xl transition-all font-black text-xs uppercase tracking-widest border border-red-100">
+              <button className="w-full text-left p-4 text-red-700 bg-red-50 hover:bg-red-100 rounded-2xl transition-all font-black text-xs uppercase tracking-widest border border-red-100 active:scale-95">
                 Esci dall'account
               </button>
             </form>
@@ -81,10 +94,10 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* Overlay: Più scuro per far risaltare la sidebar bianca */}
+      {/* Overlay: Sfondo scuro quando il menu è aperto */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[90] lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
