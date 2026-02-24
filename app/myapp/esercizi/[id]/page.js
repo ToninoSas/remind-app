@@ -3,7 +3,7 @@ import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/auth-context";
 import { getExerciseByIdAction } from "@/lib/actions/excercises";
-import { saveSvolgimentoAction } from "@/lib/actions/paziente";
+import { saveSvolgimentoAction } from "@/lib/actions/patient";
 
 // Importiamo i player specifici che abbiamo creato
 import QuizPlayer from "@/components/paziente/QuizPlayer";
