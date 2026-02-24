@@ -1,137 +1,150 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { registerAction } from "@/lib/actions/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import * as z from "zod";
 
 export default function RegisterForm() {
-
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  async function handleSubmit(e) {
+  const [loading, setLoading] = useState(false);
+  const [isValid, setIsValid] = useState(false);
+
+  const [formData, setFormData] = useState({
+    nome: "",
+    cognome: "",
+    email: "",
+    password: "",
+    tipologia: "Familiare",
+  });
+
+  // ✅ Schema Zod
+  const schema = z.object({
+    nome: z.string().min(1, "Il nome è obbligatorio"),
+    cognome: z.string().min(1, "Il cognome è obbligatorio"),
+    email: z.string().email("Email non valida"),
+    password: z.string().min(8, "La password deve contenere almeno 8 caratteri"),
+    tipologia: z.enum(["Familiare", "Professionista"]),
+  });
+
+  // Aggiornamento form
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // Controllo validità in tempo reale
+  useEffect(() => {
+    const result = schema.safeParse(formData);
+    setIsValid(result.success);
+  }, [formData]);
+
+  // Submit con validazione e conversione in FormData
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
 
-    const formData = new FormData(e.target);
-    const result = await registerAction(formData);
-
-    if (result.error) {
-      setError(result.error);
-      setLoading(false);
-    } else {
-      router.push("/login");
+    const result = schema.safeParse(formData);
+    if (!result.success) {
+      const firstError = Object.values(result.error.formErrors.fieldErrors)[0][0];
+      alert(firstError);
+      return;
     }
-  }
+
+    setLoading(true);
+    try {
+      // ✅ converti in FormData come nella versione pre-refactoring
+      const fd = new FormData();
+      for (const key in result.data) {
+        fd.append(key, result.data[key]);
+      }
+
+      const res = await registerAction(fd); // ora registerAction funziona come prima
+      if (res?.error) throw new Error(res.error);
+      router.push("/login");
+    } catch (err) {
+      alert(err?.message || "Errore durante la registrazione.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen-[90vh] py-10">
-      <div className="w-full max-w-md p-8 bg-white rounded-[2.5rem] shadow-xl border border-slate-200">
-        <h1 className="text-3xl font-black text-slate-950 mb-2 italic">
-          Inizia ora
+    <div className="h-screen flex items-center justify-center px-4">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md bg-white p-8 rounded-3xl border border-slate-200 shadow-lg space-y-6"
+      >
+        <h1 className="text-3xl font-black italic text-slate-950 text-center">
+          Crea il tuo account
         </h1>
-        <p className="text-slate-800 mb-8 font-medium">
-          Crea il tuo profilo Caregiver
+        <p className="text-slate-700 text-center mb-6 font-medium">
+          Inserisci i tuoi dati per registrarti
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[10px] font-black uppercase text-slate-700 mb-2 ml-1">
-                Nome
-              </label>
-              <input
-                name="nome"
-                type="text"
-                required
-                className="w-full p-4 bg-white border border-slate-300 rounded-2xl focus:ring-4 focus:ring-blue-100 outline-none transition-all text-slate-950 placeholder:text-slate-500"
-                placeholder="Mario"
-              />
-            </div>
-            <div>
-              <label className="block text-[10px] font-black uppercase text-slate-700 mb-2 ml-1">
-                Cognome
-              </label>
-              <input
-                name="cognome"
-                type="text"
-                required
-                className="w-full p-4 bg-white border border-slate-300 rounded-2xl focus:ring-4 focus:ring-blue-100 outline-none transition-all text-slate-950 placeholder:text-slate-500"
-                placeholder="Rossi"
-              />
-            </div>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <input
+            name="nome"
+            placeholder="Nome"
+            value={formData.nome}
+            onChange={handleChange}
+            className="p-4 border border-slate-300 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600"
+          />
+          <input
+            name="cognome"
+            placeholder="Cognome"
+            value={formData.cognome}
+            onChange={handleChange}
+            className="p-4 border border-slate-300 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600"
+          />
+        </div>
 
-          <div>
-            <label className="block text-[10px] font-black uppercase text-slate-700 mb-2 ml-1">
-              Email
-            </label>
-            <input
-              name="email"
-              type="email"
-              required
-              className="w-full p-4 bg-white border border-slate-300 rounded-2xl focus:ring-4 focus:ring-blue-100 outline-none transition-all text-slate-950 placeholder:text-slate-500"
-              placeholder="nome@email.it"
-            />
-          </div>
+        <input
+          name="email"
+          type="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+          className="w-full p-4 border border-slate-300 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600"
+        />
 
-          <div>
-            <label className="block text-[10px] font-black uppercase text-slate-700 mb-2 ml-1">
-              Password
-            </label>
-            <input
-              name="password"
-              type="password"
-              required
-              className="w-full p-4 bg-white border border-slate-300 rounded-2xl focus:ring-4 focus:ring-blue-100 outline-none transition-all text-slate-950 placeholder:text-slate-500"
-              placeholder="••••••••"
-            />
-          </div>
+        <input
+          name="password"
+          type="password"
+          placeholder="Password (min 8 caratteri)"
+          value={formData.password}
+          onChange={handleChange}
+          className="w-full p-4 border border-slate-300 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600"
+        />
 
-          <div>
-            <label className="block text-[10px] font-black uppercase text-slate-700 mb-2 ml-1">
-              Tipologia Caregiver
-            </label>
-            <div className="relative">
-              <select
-                name="tipologia"
-                defaultValue="Familiare"
-                className="w-full p-4 bg-white border border-slate-300 rounded-2xl focus:ring-4 focus:ring-blue-100 outline-none transition-all appearance-none cursor-pointer font-bold text-slate-950"
-              >
-                <option value="Familiare">👨‍👩‍👧‍👦 Familiare</option>
-                <option value="Professionista">🩺 Professionista</option>
-              </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-950">
-                ▼
-              </div>
-            </div>
-          </div>
+        <select
+          name="tipologia"
+          value={formData.tipologia}
+          onChange={handleChange}
+          className="w-full p-4 border border-slate-300 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 font-semibold"
+        >
+          <option value="Familiare">Familiare</option>
+          <option value="Professionista">Professionista</option>
+        </select>
 
-          {error && (
-            <div className="p-4 bg-red-50 text-red-700 rounded-2xl text-xs font-bold border border-red-200 animate-in fade-in zoom-in">
-              ⚠️ {error}
-            </div>
-          )}
+        <button
+          type="submit"
+          disabled={!isValid || loading}
+          className="w-full p-4 bg-blue-700 text-white rounded-2xl font-black hover:bg-blue-800 transition-all disabled:opacity-50"
+        >
+          {loading ? "Registrazione..." : "Crea account"}
+        </button>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-slate-950 text-white p-5 rounded-[2rem] font-black text-lg hover:bg-blue-700 active:scale-95 transition-all shadow-xl disabled:opacity-50"
-          >
-            {loading ? "Creazione in corso..." : "Crea account"}
-          </button>
-        </form>
-
-        <p className="mt-8 text-center text-slate-800 text-sm font-bold">
+        <p className="text-center text-sm text-slate-700">
           Hai già un account?{" "}
-          <Link href="/login" className="text-blue-700 hover:underline">
+          <Link href="/login" className="text-blue-600 font-semibold hover:underline">
             Accedi qui
           </Link>
         </p>
-      </div>
+      </form>
     </div>
   );
 }
