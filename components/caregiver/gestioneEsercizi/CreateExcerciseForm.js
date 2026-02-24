@@ -12,17 +12,12 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
 
-  // --- 1. STATI BASE ---
+  // --- STATI (Invariati) ---
   const [tipo, setTipo] = useState(initialData?.Type || "quiz");
   const [titolo, setTitolo] = useState(initialData?.Title || "");
-  const [descrizione, setDescrizione] = useState(
-    initialData?.Description || ""
-  );
-  const [difficolta, setDifficolta] = useState(
-    initialData?.Difficulty_Level || 1
-  );
+  const [descrizione, setDescrizione] = useState(initialData?.Description || "");
+  const [difficolta, setDifficolta] = useState(initialData?.Difficulty_Level || 1);
 
-  // --- 2. STATO PER MEMORY (2-5 coppie) ---
   const [numeroCoppie, setNumeroCoppie] = useState(() => {
     if (initialData?.Type === "memoria" && initialData?.Content_Json) {
       const parsed = JSON.parse(initialData.Content_Json);
@@ -31,80 +26,35 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
     return 2;
   });
 
-  // --- 3. STATO PER QUIZ / CALCOLO (Items con domande e opzioni) ---
   const [items, setItems] = useState(() => {
     if (initialData?.Type !== "memoria" && initialData?.Content_Json) {
       const parsed = JSON.parse(initialData.Content_Json);
       return parsed.items || [];
     }
-    return [
-      {
-        id: Date.now(),
-        testo: "",
-        scenario: "",
-        media: null,
-        opzioni: [
-          { testo: "", isCorretta: false },
-          { testo: "", isCorretta: false },
-        ],
-      },
-    ];
+    return [{
+      id: Date.now(),
+      testo: "",
+      scenario: "",
+      media: null,
+      opzioni: [{ testo: "", isCorretta: false }, { testo: "", isCorretta: false }],
+    }];
   });
 
-  // --- LOGICA GESTIONE ITEMS (QUIZ/CALCOLO) ---
-  const addItem = () => {
-    setItems([
-      ...items,
-      {
-        id: Date.now(),
-        testo: "",
-        scenario: "",
-        media: null,
-        opzioni: [
-          { testo: "", isCorretta: false },
-          { testo: "", isCorretta: false },
-        ],
-      },
-    ]);
-  };
-
+  // --- LOGICA GESTIONE (Invariata) ---
+  const addItem = () => setItems([...items, { id: Date.now(), testo: "", scenario: "", media: null, opzioni: [{ testo: "", isCorretta: false }, { testo: "", isCorretta: false }] }]);
   const removeItem = (idx) => setItems(items.filter((_, i) => i !== idx));
+  const addOpzione = (qIdx) => { const ni = [...items]; ni[qIdx].opzioni.push({ testo: "", isCorretta: false }); setItems(ni); };
+  const removeOpzione = (qIdx, oIdx) => { const ni = [...items]; if (ni[qIdx].opzioni.length > 2) { ni[qIdx].opzioni.splice(oIdx, 1); setItems(ni); } };
 
-  const addOpzione = (qIdx) => {
-    const ni = [...items];
-    ni[qIdx].opzioni.push({ testo: "", isCorretta: false });
-    setItems(ni);
-  };
-
-  const removeOpzione = (qIdx, oIdx) => {
-    const ni = [...items];
-    if (ni[qIdx].opzioni.length > 2) {
-      ni[qIdx].opzioni.splice(oIdx, 1);
-      setItems(ni);
-    }
-  };
-
-  // --- SALVATAGGIO ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!titolo.trim()) return alert("Inserisci un titolo");
-
     setLoading(true);
     const payload = {
-      titolo,
-      tipo,
-      descrizione,
-      difficolta: parseInt(difficolta),
-      contenuto:
-        tipo === "memoria"
-          ? { tipo, numeroCoppie: parseInt(numeroCoppie) }
-          : { tipo, items },
+      titolo, tipo, descrizione, difficolta: parseInt(difficolta),
+      contenuto: tipo === "memoria" ? { tipo, numeroCoppie: parseInt(numeroCoppie) } : { tipo, items },
     };
-
-    const res = initialData
-      ? await updateExerciseAction(initialData.Id, payload)
-      : await createExerciseAction(payload, user.ProfileID);
-
+    const res = initialData ? await updateExerciseAction(initialData.Id, payload) : await createExerciseAction(payload, user.ProfileID);
     if (res.success) onSave();
     else alert(res.error);
     setLoading(false);
@@ -113,14 +63,14 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white p-10 rounded-[3rem] shadow-xl max-w-4xl mx-auto border border-slate-300"
+      className="bg-white p-6 md:p-10 rounded-[2.5rem] md:rounded-[3rem] shadow-xl max-w-4xl mx-auto border border-slate-300"
     >
-      <h2 className="text-3xl font-black text-slate-950 mb-8 italic">
+      <h2 className="text-2xl md:text-3xl font-black text-slate-950 mb-8 italic">
         {initialData ? "Modifica Attività" : "Nuova Configurazione"}
       </h2>
 
-      {/* --- SEZIONE 1: INFO BASE (ALTO CONTRASTO) --- */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-5 pb-5 border-slate-200">
+      {/* --- SEZIONE 1: INFO BASE --- */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8">
         <div className="space-y-5">
           <div>
             <label className="block text-[10px] font-black text-slate-800 uppercase tracking-widest ml-1 mb-2">
@@ -129,7 +79,7 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
             <select
               value={tipo}
               onChange={(e) => setTipo(e.target.value)}
-              className="w-full p-4 bg-white border border-slate-300 rounded-2xl font-black text-slate-950 outline-none focus:ring-4 focus:ring-blue-100"
+              className="w-full p-4 bg-white border border-slate-300 rounded-2xl font-black text-slate-950 focus:ring-4 focus:ring-blue-100 outline-none"
             >
               <option value="quiz">🧩 Quiz Cognitivo</option>
               <option value="calcolo">🔢 Calcolo Situazionale</option>
@@ -143,7 +93,7 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
             <input
               value={titolo}
               onChange={(e) => setTitolo(e.target.value)}
-              className="w-full p-4 bg-white border border-slate-300 rounded-2xl font-black text-slate-950 placeholder:text-slate-500 outline-none"
+              className="w-full p-4 bg-white border border-slate-300 rounded-2xl font-black text-slate-950 placeholder:text-slate-400 outline-none"
               placeholder="Es: Spesa al mercato"
             />
           </div>
@@ -154,10 +104,7 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
               Livello Difficoltà: {difficolta}
             </label>
             <input
-              type="range"
-              min="1"
-              max="5"
-              value={difficolta}
+              type="range" min="1" max="5" value={difficolta}
               onChange={(e) => setDifficolta(e.target.value)}
               className="w-full h-2 bg-slate-200 rounded-lg appearance-none accent-blue-700 cursor-pointer"
             />
@@ -169,7 +116,7 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
             <textarea
               value={descrizione}
               onChange={(e) => setDescrizione(e.target.value)}
-              className="w-full p-4 bg-white border border-slate-300 rounded-2xl h-[100px] resize-none font-medium text-slate-950 placeholder:text-slate-500"
+              className="w-full p-4 bg-white border border-slate-300 rounded-2xl h-[100px] resize-none font-medium text-slate-950"
               placeholder="Quale area cognitiva stiamo allenando?"
             />
           </div>
@@ -177,241 +124,145 @@ export default function CreateExerciseForm({ onSave, initialData = null }) {
       </div>
 
       {/* --- SEZIONE 2: LOGICA DINAMICA --- */}
-
       {tipo === "memoria" ? (
-        /* FLUSSO MEMORY */
-        <div className="p-10 bg-blue-50/50 rounded-[3rem] border border-blue-300 animate-in zoom-in">
-          <h3 className="text-xl font-black text-blue-900 mb-6">
-            Configurazione Memory
-          </h3>
+        <div className="p-6 md:p-10 bg-blue-50/50 rounded-[2.5rem] md:rounded-[3rem] border border-blue-300 animate-in zoom-in">
+          <h3 className="text-xl font-black text-blue-900 mb-6">Configurazione Memory</h3>
           <div className="space-y-6">
             <label className="block text-center text-[10px] font-black text-blue-800 uppercase tracking-widest">
-              Seleziona numero di coppie:{" "}
-              <span className="text-3xl ml-2">{numeroCoppie}</span>
+              Numero di coppie: <span className="text-3xl ml-2">{numeroCoppie}</span>
             </label>
             <input
-              type="range"
-              min="2"
-              max="5"
-              value={numeroCoppie}
+              type="range" min="2" max="5" value={numeroCoppie}
               onChange={(e) => setNumeroCoppie(e.target.value)}
               className="w-full h-3 bg-blue-200 rounded-lg appearance-none cursor-pointer accent-blue-700"
             />
             <div className="flex justify-between text-[10px] font-black text-blue-400">
-              <span>MIN: 2 COPPIE</span>
-              <span>MAX: 5 COPPIE</span>
+              <span>MIN: 2</span>
+              <span>MAX: 5</span>
             </div>
           </div>
         </div>
       ) : (
-        /* FLUSSO QUIZ E CALCOLO */
-        <div className="space-y-5">
-          <h3 className="text-2xl font-black text-slate-950">
-            Struttura Quesiti
-          </h3>
+        <div className="space-y-6">
+          <h3 className="text-2xl font-black text-slate-950">Struttura Quesiti</h3>
           {items.map((item, qIdx) => (
             <div
               key={item.id}
-              className="p-8 bg-slate-50/50 rounded-[3.5rem] border border-slate-300 relative shadow-sm"
+              className="p-6 md:p-8 bg-slate-50/50 rounded-[2.5rem] md:rounded-[3.5rem] border border-slate-300 relative shadow-sm"
             >
               <button
                 type="button"
                 onClick={() => removeItem(qIdx)}
-                className="absolute top-3 right-12 text-red-700 font-black text-xs uppercase hover:underline"
+                className="absolute top-6 right-8 text-red-600 font-black text-[10px] uppercase hover:underline"
               >
-                Elimina quesito
+                Elimina
               </button>
 
-              <div className="space-y-6">
-                {/* Scenario (Solo per Calcolo) */}
+              <div className="space-y-6 pt-4">
+                {/* Scenario */}
                 {tipo === "calcolo" && (
                   <div>
-                    <label className="text-[10px] font-black text-slate-800 uppercase ml-1">
-                      Scenario (Contesto per il paziente)
-                    </label>
+                    <label className="text-[10px] font-black text-slate-800 uppercase ml-1">Scenario / Contesto</label>
                     <textarea
                       value={item.scenario}
-                      onChange={(e) => {
-                        const ni = [...items];
-                        ni[qIdx].scenario = e.target.value;
-                        setItems(ni);
-                      }}
+                      onChange={(e) => { const ni = [...items]; ni[qIdx].scenario = e.target.value; setItems(ni); }}
                       className="w-full p-4 mt-1 bg-white border border-slate-300 rounded-2xl text-slate-950 italic"
-                      placeholder="Es: Sei alla cassa e devi pagare 5 euro..."
+                      placeholder="Es: Sei alla cassa e devi pagare..."
                     />
                   </div>
                 )}
 
-                {/* Media Supporto */}
-                <div className="flex items-center gap-6 p-4 bg-white border border-slate-200 rounded-2xl">
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
-                    Contenuto Multimediale (Foto, Video o Audio)
-                  </p>
+                {/* Media Supporto: Da riga a colonna su mobile */}
+                <div className="flex flex-col gap-4 p-5 bg-white border border-slate-200 rounded-3xl">
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Supporto Multimediale</p>
+                  
+                  <div className="flex flex-col sm:flex-row items-center gap-4">
+                    <label className="flex-1 w-full relative flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-300 rounded-3xl bg-slate-50 hover:bg-blue-50 transition-all cursor-pointer">
+                      <input
+                        type="file" accept="image/*,video/*,audio/*" className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files[0]; if (!file) return;
+                          const formData = new FormData(); formData.append("file", file);
+                          const res = await uploadMediaAction(formData);
+                          if (res.success) {
+                            const ni = [...items];
+                            ni[qIdx].media = { url: res.url, tipo: file.type.split("/")[0] };
+                            setItems(ni);
+                          }
+                        }}
+                      />
+                      <span className="text-2xl mb-1">📤</span>
+                      <span className="text-[10px] font-black text-slate-950 uppercase">Carica file</span>
+                    </label>
 
-                  <label className="relative flex flex-col items-center justify-center w-full p-6 border-2 border-dashed border-slate-300 rounded-[2rem] bg-slate-50 hover:bg-blue-50 hover:border-blue-300 transition-all cursor-pointer group">
-                    {/* Input nascosto, ma funzionale */}
-                    <input
-                      type="file"
-                      accept="image/*,video/*,audio/*"
-                      className="hidden"
-                      onChange={async (e) => {
-                        const file = e.target.files[0];
-                        if (!file) return;
-
-                        // Feedback visivo immediato (opzionale se hai lo stato)
-                        // setIsUploading(true); 
-
-                        const formData = new FormData();
-                        formData.append("file", file);
-
-                        const res = await uploadMediaAction(formData);
-
-                        if (res.success) {
-                          const ni = [...items];
-                          ni[qIdx].media = {
-                            url: res.url,
-                            tipo: file.type.split("/")[0], // 'image', 'video' o 'audio'
-                          };
-                          setItems(ni);
-                        }
-                        // setIsUploading(false);
-                      }}
-                    />
-
-                    {/* Interfaccia del Pulsante */}
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                        <span className="text-2xl">📤</span>
+                    {item.media && (
+                      <div className="shrink-0">
+                         {item.media.tipo === 'image' ? (
+                            <Image alt="Preview" width={80} height={80} src={item.media.url} className="w-20 h-20 rounded-2xl object-cover border-2 border-slate-200" />
+                         ) : (
+                            <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center text-2xl border-2 border-slate-200">
+                               {item.media.tipo === 'video' ? '🎥' : '🎵'}
+                            </div>
+                         )}
                       </div>
-                      <div className="text-center">
-                        <span className="block text-sm font-black text-slate-950 uppercase tracking-tight">
-                          Scegli un file
-                        </span>
-                        <span className="text-[10px] text-slate-500 font-bold uppercase">
-                          Trascina qui o clicca per sfogliare
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Overlay per il caricamento (mostrare solo se isUploading è true) */}
-                    {/* isUploading && (
-      <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-[2rem] flex items-center justify-center">
-         <span className="animate-spin text-2xl">⏳</span>
-      </div>
-    ) */}
-                  </label>
-
-                  {/* Feedback se il file è già presente */}
-                  {items[qIdx].media?.url && (
-                    <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-100 rounded-xl w-fit">
-                      <span className="text-xs text-green-700 font-black uppercase tracking-widest">
-                        ✅ File caricato con successo
-                      </span>
-                    </div>
-                  )}
-                  {item.media && (
-                    <Image
-                      alt="Media di supporto"
-                      width={30}
-                      height={30}
-                      src={item.media.url}
-                      className="w-20 h-20 rounded-xl object-cover border-2 border-slate-300"
-                    />
-                  )}
+                    )}
+                  </div>
                 </div>
 
-                {/* Testo Domanda */}
+                {/* Domanda */}
                 <div>
-                  <label className="text-[10px] font-black text-slate-800 uppercase ml-1">
-                    Domanda n.{qIdx + 1}
-                  </label>
+                  <label className="text-[10px] font-black text-slate-800 uppercase ml-1">Domanda n.{qIdx + 1}</label>
                   <input
                     value={item.testo}
-                    onChange={(e) => {
-                      const ni = [...items];
-                      ni[qIdx].testo = e.target.value;
-                      setItems(ni);
-                    }}
-                    className="w-full p-4 mt-1 bg-white border border-slate-300 rounded-2xl font-black text-slate-950 placeholder:text-slate-500"
+                    onChange={(e) => { const ni = [...items]; ni[qIdx].testo = e.target.value; setItems(ni); }}
+                    className="w-full p-4 mt-1 bg-white border border-slate-300 rounded-2xl font-black text-slate-950"
                     placeholder="Cosa deve rispondere il paziente?"
                   />
                 </div>
 
-                {/* Opzioni di Risposta */}
-                <div className="space-y-2 pt-4">
-                  <label className="text-[10px] font-black text-slate-800 uppercase ml-1">
-                    Opzioni e Risposta Corretta
-                  </label>
+                {/* Opzioni: Più spazio per il tocco */}
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-slate-800 uppercase ml-1">Risposte</label>
                   {item.opzioni.map((opt, oIdx) => (
-                    <div key={oIdx} className="flex gap-3">
+                    <div key={oIdx} className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => {
-                          const ni = [...items];
-                          ni[qIdx].opzioni[oIdx].isCorretta =
-                            !ni[qIdx].opzioni[oIdx].isCorretta;
-                          setItems(ni);
-                        }}
-                        className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center font-black transition-all ${opt.isCorretta
-                            ? "bg-green-600 border-green-700 text-white"
-                            : "bg-white border-slate-300 text-slate-200"
-                          }`}
+                        onClick={() => { const ni = [...items]; ni[qIdx].opzioni[oIdx].isCorretta = !ni[qIdx].opzioni[oIdx].isCorretta; setItems(ni); }}
+                        className={`w-12 h-12 rounded-xl border-2 shrink-0 flex items-center justify-center font-black transition-all ${opt.isCorretta ? "bg-green-600 border-green-700 text-white" : "bg-white border-slate-300 text-slate-200"}`}
                       >
                         {opt.isCorretta ? "✓" : ""}
                       </button>
                       <input
                         value={opt.testo}
-                        onChange={(e) => {
-                          const ni = [...items];
-                          ni[qIdx].opzioni[oIdx].testo = e.target.value;
-                          setItems(ni);
-                        }}
-                        className="flex-1 p-3 bg-white border border-slate-300 rounded-xl text-slate-950 font-bold"
-                        placeholder="Opzione di risposta..."
+                        onChange={(e) => { const ni = [...items]; ni[qIdx].opzioni[oIdx].testo = e.target.value; setItems(ni); }}
+                        className="flex-1 p-3 bg-white border border-slate-300 rounded-xl text-slate-950 font-bold text-sm"
+                        placeholder="Opzione..."
                       />
-                      <button
-                        type="button"
-                        onClick={() => removeOpzione(qIdx, oIdx)}
-                        className="text-slate-300 hover:text-red-600 font-bold px-2"
-                      >
-                        ✕
-                      </button>
+                      <button type="button" onClick={() => removeOpzione(qIdx, oIdx)} className="text-red-300 hover:text-red-600 font-bold p-2">✕</button>
                     </div>
                   ))}
-                  <button
-                    type="button"
-                    onClick={() => addOpzione(qIdx)}
-                    className="text-[10px] font-black text-blue-700 uppercase tracking-widest hover:underline"
-                  >
-                    + Aggiungi Opzione
-                  </button>
+                  <button type="button" onClick={() => addOpzione(qIdx)} className="text-[10px] font-black text-blue-700 uppercase tracking-widest pl-1">+ Aggiungi Opzione</button>
                 </div>
               </div>
             </div>
           ))}
 
           <button
-            type="button"
-            onClick={addItem}
-            className="w-full py-6 border-2 border-dashed border-slate-300 rounded-[2.5rem] font-black text-slate-700 hover:text-blue-700 hover:border-blue-400 transition-all"
+            type="button" onClick={addItem}
+            className="w-full py-6 border-2 border-dashed border-slate-300 rounded-[2.5rem] font-black text-slate-600 hover:bg-blue-50 hover:border-blue-300 transition-all text-sm uppercase tracking-widest"
           >
-            + AGGIUNGI UN ALTRO QUESITO
+            + Aggiungi Quesito
           </button>
         </div>
       )}
 
       {/* --- AZIONE FINALE --- */}
-      <div className="mt-16">
+      <div className="mt-12">
         <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-6 bg-slate-950 text-white rounded-[2.5rem] font-black text-xl shadow-2xl hover:bg-blue-700 transition-all disabled:opacity-50"
+          type="submit" disabled={loading}
+          className="w-full py-6 bg-slate-950 text-white rounded-[2.5rem] font-black text-lg md:text-xl shadow-2xl hover:bg-blue-700 transition-all disabled:opacity-50"
         >
-          {loading
-            ? "SALVATAGGIO..."
-            : initialData
-              ? "AGGIORNA ESERCIZIO"
-              : "PUBBLICA NELLA LIBRERIA"}
+          {loading ? "SALVATAGGIO..." : initialData ? "AGGIORNA ATTIVITÀ" : "PUBBLICA ESERCIZIO"}
         </button>
       </div>
     </form>
