@@ -74,7 +74,7 @@ export default function EserciziPaziente({ data, patientId }) {
                                 {ex.Status === "da_svolgere" && (
                                     <button
                                         onClick={() => handleUnassign(ex.Id)}
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black text-red-700 hover:text-red-900 uppercase tracking-widest px-4"
+                                        className="group-hover:opacity-100 transition-opacity text-[12px] font-black text-red-700 hover:text-red-900 uppercase tracking-widest px-4"
                                     >
                                         Elimina
                                     </button>

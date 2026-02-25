@@ -41,22 +41,26 @@ export default function PaginaPaziente({ data, patientId, activeTab }) {
         {" "}
         {/* wrapper esterno che centra */}
         <div className="inline-flex gap-2 p-1.5 bg-slate-200 rounded-[1.5rem] overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap">
-          {["anagrafica", "esercizi", "statistiche", "box ricordi"].map(
-            (tab) => (
-              <Link
-                key={tab}
-                href={`/pazienti/${patientId}?tab=${tab.toLowerCase().replace(" ", "")}`}
-                scroll={false}
-                className={`px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap shrink-0 ${
-                  activeTab === tab.toLowerCase().replace(" ", "")
-                    ? "bg-white text-blue-800 shadow-md"
-                    : "text-slate-700 hover:text-slate-950"
-                }`}
-              >
-                {tab.toUpperCase()}
-              </Link>
-            ),
-          )}
+          {["anagrafica", "esercizi", "statistiche"].map((tab) => (
+            <Link
+              key={tab}
+              href={`/pazienti/${patientId}?tab=${tab.toLowerCase().replace(" ", "")}`}
+              scroll={false}
+              className={`px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap shrink-0 ${
+                activeTab === tab.toLowerCase().replace(" ", "")
+                  ? "bg-white text-blue-800 shadow-md"
+                  : "text-slate-700 hover:text-slate-950"
+              }`}
+            >
+              {tab.toUpperCase()}
+            </Link>
+          ))}
+          <Link
+            href={`/pazienti/${patientId}/ricordi`}
+            className="px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap shrink-0"
+          >
+            Box Ricordi
+          </Link>
         </div>
       </div>
 
