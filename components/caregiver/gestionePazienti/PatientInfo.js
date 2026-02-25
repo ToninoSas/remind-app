@@ -1,7 +1,7 @@
 import StatistichePaziente from "@/components/caregiver/gestionePazienti/PatientStatistics";
 import Link from "next/link";
 import EserciziPaziente from "./PatientExercises";
-import AnagraficaPaziente from "./PatientRegistry";
+import AnagraficaPaziente from "../../../app/ui/update-patient-form";
 
 export default function PaginaPaziente({ data, patientId, activeTab }) {
   return (
