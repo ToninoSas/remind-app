@@ -29,7 +29,7 @@ export default function AddPatientForm() {
     patologia: z.string(),
     descrizione: z.string().optional(),
     emailAccesso: z.string().email("Email non valida"),
-    passwordAccesso: z.string().min(6, "Password minima 8 caratteri"),
+    passwordAccesso: z.string().min(8, "Password minima 8 caratteri"),
   });
 
   // Aggiornamento dati
@@ -74,77 +74,80 @@ export default function AddPatientForm() {
   };
 
   return (
+  <div className="py-6 px-4 md:px-8">
     <form
       onSubmit={handleSubmit}
-      className="mt-10 bg-white rounded-[2.5rem] shadow-2xl p-6 md:p-10 max-w-4xl mx-auto border border-slate-200 space-y-10"
+      className="max-w-6xl mx-auto bg-white rounded-3xl shadow-lg border border-slate-200 p-6 md:p-8"
     >
       {/* HEADER */}
-      <div className="text-center">
+      <div className="mb-6">
         <h1 className="text-2xl md:text-3xl font-black text-slate-900">
           Nuovo Paziente
         </h1>
-        <p className="text-slate-600 mt-2 text-sm md:text-base">
+        <p className="text-slate-600 text-sm">
           Inserisci i dati clinici e crea le credenziali di accesso.
         </p>
       </div>
 
-      {/* DATI CLINICI */}
-      <div className="space-y-6">
-        <h2 className="text-sm font-black uppercase tracking-widest text-blue-800">
-          Dati Clinici
-        </h2>
+      {/* GRID PRINCIPALE DESKTOP */}
+      <div className="grid lg:grid-cols-2 gap-8">
+        
+        {/* COLONNA SINISTRA - DATI CLINICI */}
+        <div className="space-y-4">
+          <h2 className="text-xs font-black uppercase tracking-widest text-blue-800">
+            Dati Clinici
+          </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input
-            name="nome"
-            type="text"
-            value={formData.nome}
-            placeholder="Nome"
-            onChange={handleChange}
-            required
-            className="p-4 border border-slate-300 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-blue-600"
-          />
+          <div className="grid sm:grid-cols-2 gap-4">
+            <input
+              name="nome"
+              type="text"
+              value={formData.nome}
+              placeholder="Nome"
+              onChange={handleChange}
+              required
+              className="p-3 border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-600"
+            />
 
-          <input
-            name="cognome"
-            type="text"
-            value={formData.cognome}
-            placeholder="Cognome"
+            <input
+              name="cognome"
+              type="text"
+              value={formData.cognome}
+              placeholder="Cognome"
+              onChange={handleChange}
+              required
+              className="p-3 border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-600"
+            />
+          </div>
+
+          <select
+            name="patologia"
+            value={formData.patologia}
             onChange={handleChange}
-            required
-            className="p-4 border border-slate-300 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full p-3 border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-600"
+          >
+            <option>Alzheimer</option>
+            <option>Demenza Vascolare</option>
+            <option>MCI (Lieve)</option>
+            <option>Altro</option>
+          </select>
+
+          <textarea
+            name="descrizione"
+            value={formData.descrizione}
+            onChange={handleChange}
+            rows="3"
+            placeholder="Note cliniche..."
+            className="w-full p-3 border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-600 resize-none"
           />
         </div>
 
-        <select
-          name="patologia"
-          value={formData.patologia}
-          onChange={handleChange}
-          className="w-full p-4 border border-slate-300 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-blue-600"
-        >
-          <option>Alzheimer</option>
-          <option>Demenza Vascolare</option>
-          <option>MCI (Lieve)</option>
-          <option>Altro</option>
-        </select>
+        {/* COLONNA DESTRA - CREDENZIALI */}
+        <div className="space-y-4">
+          <h2 className="text-xs font-black uppercase tracking-widest text-green-800">
+            Credenziali di Accesso
+          </h2>
 
-        <textarea
-          name="descrizione"
-          value={formData.descrizione}
-          onChange={handleChange}
-          rows="4"
-          placeholder="Note cliniche..."
-          className="w-full p-4 border border-slate-300 rounded-2xl font-medium italic outline-none focus:ring-2 focus:ring-blue-600 resize-none"
-        />
-      </div>
-
-      {/* CREDENZIALI */}
-      <div className="space-y-6">
-        <h2 className="text-sm font-black uppercase tracking-widest text-green-800">
-          Credenziali di Accesso (la password deve essere di almeno 8 caratteri)
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             name="emailAccesso"
             type="email"
@@ -152,42 +155,41 @@ export default function AddPatientForm() {
             onChange={handleChange}
             placeholder="Email paziente"
             required
-            className="p-4 border border-slate-300 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-green-600"
+            className="w-full p-3 border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-green-600"
           />
-          {/* <label className="text-[10px] font-black uppercase text-slate-800 ml-2 mb-1 block">
-            Password di accesso (minimo 8 caratteri)
-          </label> */}
+
           <input
             name="passwordAccesso"
             type="password"
             value={formData.passwordAccesso}
             onChange={handleChange}
-            placeholder="Password di accesso"
+            placeholder="Password (min 8 caratteri)"
             required
             minLength={8}
-            className="p-4 border border-slate-300 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-green-600"
+            className="w-full p-3 border border-slate-300 rounded-xl outline-none focus:ring-2 focus:ring-green-600"
           />
+
+          {/* AZIONI */}
+          <div className="flex gap-4 pt-4">
+            <button
+              type="button"
+              onClick={() => router.push("/pazienti")}
+              className="flex-1 p-3 text-slate-700 font-bold text-xs uppercase tracking-widest"
+            >
+              Annulla
+            </button>
+
+            <button
+              type="submit"
+              disabled={!isValid || loading}
+              className="flex-1 p-3 bg-green-700 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-green-800 transition-all disabled:opacity-50"
+            >
+              {loading ? "Salvataggio..." : "Salva Paziente"}
+            </button>
+          </div>
         </div>
       </div>
-
-      {/* AZIONI */}
-      <div className="flex flex-col md:flex-row gap-4 pt-6">
-        <button
-          type="button"
-          onClick={() => router.push("/pazienti")}
-          className="flex-1 p-4 text-slate-800 font-black uppercase text-xs tracking-widest"
-        >
-          Annulla
-        </button>
-
-        <button
-          type="submit"
-          disabled={!isValid || loading}
-          className="flex-1 p-5 bg-green-700 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-green-100 hover:bg-green-800 transition-all disabled:opacity-50"
-        >
-          {loading ? "Salvataggio..." : "Salva Paziente"}
-        </button>
-      </div>
     </form>
-  );
+  </div>
+);
 }

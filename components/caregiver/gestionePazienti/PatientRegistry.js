@@ -9,7 +9,6 @@ export default function AnagraficaPaziente({ data, patientId }) {
 
     const [isEditing, setIsEditing] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
-
     const [showSuccess, setShowSuccess] = useState(false);
 
     const [editData, setEditData] = useState({
@@ -20,12 +19,14 @@ export default function AnagraficaPaziente({ data, patientId }) {
         descrizione: data.info.Description,
     });
 
+    const patologieOptions = ["Alzheimer", "Demenza Vascolare", "MCI (Lieve)", "Altro"];
+
     const handleSave = async () => {
         const res = await updatePatientAction(patientId, data.info.User_Id, editData);
         if (res.success) {
             setIsEditing(false);
             setShowSuccess(true);
-            router.refresh(); // Aggiorna i dati nel server component
+            router.refresh();
             setTimeout(() => setShowSuccess(false), 2000);
         } else {
             alert(res.error)
@@ -43,10 +44,7 @@ export default function AnagraficaPaziente({ data, patientId }) {
     };
 
     const handleCancel = () => {
-        // 1. Chiude il form
         setIsEditing(false); 
-        
-        // 2. Resetta la memoria (editData) con i dati originali del database
         setEditData({
             nome: data.info.First_Name,
             cognome: data.info.Last_Name,
@@ -58,12 +56,9 @@ export default function AnagraficaPaziente({ data, patientId }) {
 
     return (
         <form 
-            onSubmit={(e) => {
-                e.preventDefault();
-                handleSave();
-            }} 
-             className="space-y-8 animate-in fade-in duration-500"
-            >
+            onSubmit={(e) => { e.preventDefault(); handleSave(); }} 
+            className="space-y-8 animate-in fade-in duration-500"
+        >
             {showSuccess && (
                 <div className="fixed top-10 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-4 duration-300">
                     <div className="bg-slate-950 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-700">
@@ -116,8 +111,7 @@ export default function AnagraficaPaziente({ data, patientId }) {
                                 {data.info.Condition}
                             </p>
                             <p className="text-slate-800 leading-relaxed italic font-medium">
-                                {data.info.Description ||
-                                    "Nessuna nota descrittiva presente."}
+                                {data.info.Description || "Nessuna nota descrittiva presente."}
                             </p>
                         </div>
                     </div>
@@ -139,7 +133,6 @@ export default function AnagraficaPaziente({ data, patientId }) {
                     </div>
                 </div>
             ) : (
-                /* INPUT MODIFICA - Sfondo bianco e testo nero */
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in slide-in-from-bottom-2">
                     <div className="space-y-5">
                         <div>
@@ -186,15 +179,31 @@ export default function AnagraficaPaziente({ data, patientId }) {
                         </div>
                         <div>
                             <label className="text-[10px] font-black text-slate-800 uppercase ml-1">
+                                Patologia
+                            </label>
+                            <select
+                                value={editData.patologia}
+                                onChange={(e) =>
+                                    setEditData({ ...editData, patologia: e.target.value })
+                                }
+                                required
+                                className="w-full p-4 bg-white border border-slate-300 text-slate-950 font-bold rounded-2xl mt-1 outline-none focus:ring-2 focus:ring-blue-600"
+                            >
+                                {patologieOptions.map((p) => (
+                                    <option key={p} value={p}>
+                                        {p}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="text-[10px] font-black text-slate-800 uppercase ml-1">
                                 Note Cliniche
                             </label>
                             <textarea
-                                value={editData.Description}
+                                value={editData.descrizione}
                                 onChange={(e) =>
-                                    setEditData({
-                                        ...editData,
-                                        Description: e.target.value,
-                                    })
+                                    setEditData({ ...editData, descrizione: e.target.value })
                                 }
                                 rows="3"
                                 className="w-full p-4 bg-white border border-slate-300 text-slate-950 font-medium rounded-2xl mt-1 resize-none focus:ring-2 focus:ring-blue-600"
@@ -204,6 +213,7 @@ export default function AnagraficaPaziente({ data, patientId }) {
                 </div>
             )}
 
+            {/* Zona Pericolo */}
             <div className="pt-12 mt-12 border-t border-slate-200">
                 <div className="bg-red-50 p-8 rounded-[2rem] border border-red-200 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div>
@@ -233,7 +243,7 @@ export default function AnagraficaPaziente({ data, patientId }) {
                             Confermi?
                         </h3>
                         <p className="text-slate-800 text-sm font-bold mb-10 leading-relaxed italic">
-                            Il profilo di <strong>{data.info.Nome}</strong> verrà disattivato.
+                            Il profilo di <strong>{data.info.First_Name}</strong> verrà disattivato.
                         </p>
                         <div className="flex gap-4">
                             <button
@@ -255,6 +265,5 @@ export default function AnagraficaPaziente({ data, patientId }) {
                 </div>
             )}
         </form>
-
     );
 }
