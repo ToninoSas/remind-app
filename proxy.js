@@ -9,7 +9,7 @@ export function proxy(request) {
 
   console.log("Middleware attivo su:", pathname, "| Ruolo:", userRole, "| Autenticato:", isAuthenticated);
 
-  const isPublicRoute = pathname === "/login" || pathname === "/register" || pathname === "/";
+  const isPublicRoute = pathname === "/login" || pathname === "/register" || pathname === "/" || pathname === "/seed";
 
   // 1. Se non è loggato e non è in /login, lo mandiamo al login
   if (!isAuthenticated && !isPublicRoute) {
