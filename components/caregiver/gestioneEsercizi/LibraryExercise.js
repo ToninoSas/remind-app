@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { softDeleteExerciseAction } from "@/lib/actions/excercises";
-import CreateExerciseForm from "@/components/caregiver/gestioneEsercizi/CreateExcerciseForm";
+import CreateExerciseForm from "@/app/ui/CreateExcerciseForm";
 import ExercisePreview from "@/components/caregiver/gestioneEsercizi/ExercisePreview";
 
 export default function LibreriaEsercizi({ initialEsercizi, activeFilter }) {

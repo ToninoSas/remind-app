@@ -1,8 +1,6 @@
 // app/caregiver/pazienti/page.jsx
-import { Suspense } from "react";
 import PatientList from "@/app/(caregiver)/pazienti/PatientList";
 import AddPatientButton from "@/components/caregiver/gestionePazienti/AddPatientButton";
-import { CardSkeleton } from "@/app/ui/skeletons";
 
 export default async function ListaPazientiPage() {
   return (
@@ -26,9 +24,7 @@ export default async function ListaPazientiPage() {
       </header>
 
       <main className="max-w-7xl mx-auto">
-        {/* <Suspense fallback={<CardSkeleton />}> */}
           <PatientList />
-        {/* </Suspense> */}
       </main>
     </div>
   );

@@ -1,4 +1,4 @@
-import AddPatientForm from "@/components/caregiver/gestionePazienti/AddPatientForm";
+import AddPatientForm from "@/app/ui/AddPatientForm";
 
 export default async function AggiungiPaziente() {
  
