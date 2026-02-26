@@ -57,7 +57,7 @@ export default function PaginaPaziente({ data, patientId, activeTab }) {
           ))}
           <Link
             href={`/pazienti/${patientId}/ricordi`}
-            className="px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap shrink-0"
+            className="px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap shrink-0 text-slate-700 hover:text-slate-950"
           >
             Box Ricordi
           </Link>
