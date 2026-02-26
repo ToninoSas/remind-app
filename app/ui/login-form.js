@@ -9,6 +9,7 @@ export default function LoginForm() {
 
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -38,11 +39,8 @@ export default function LoginForm() {
       }
 
       await login(email, password);
-
     } catch (err) {
-      setError(
-        err?.message || "Email o password non corretti. Riprova."
-      );
+      setError(err?.message || "Email o password non corretti. Riprova.");
     } finally {
       setLoading(false);
     }
@@ -51,7 +49,6 @@ export default function LoginForm() {
   return (
     <div className="flex items-center justify-center min-h-[80vh] px-4">
       <div className="w-full max-w-md p-8 bg-white rounded-3xl shadow-2xl border border-slate-200">
-        
         <h1 className="text-4xl font-black text-slate-950 italic tracking-tight">
           Bentornato
         </h1>
@@ -60,7 +57,6 @@ export default function LoginForm() {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-
           <div>
             <label className="block text-xs font-black uppercase text-slate-700 mb-2 ml-1">
               Email
@@ -82,18 +78,32 @@ export default function LoginForm() {
             <label className="block text-xs font-black uppercase text-slate-700 mb-2 ml-1">
               Password
             </label>
-            <input
-              name="password"
-              type="password"
-              required
-              minLength={6}
-              disabled={loading}
-              placeholder="••••••••"
-              className="w-full p-4 bg-white border border-slate-300 rounded-2xl 
-                         focus:ring-4 focus:ring-blue-100 outline-none 
-                         text-slate-950 font-semibold 
-                         disabled:opacity-50"
-            />
+
+            <div className="relative">
+              <input
+                name="password"
+                type={showPassword ? "text" : "password"}
+                required
+                minLength={6}
+                disabled={loading}
+                placeholder="••••••••"
+                className="w-full p-4 pr-16 bg-white border border-slate-300 rounded-2xl
+                 focus:ring-4 focus:ring-blue-100 outline-none
+                 text-slate-950 font-semibold
+                 disabled:opacity-50"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                disabled={loading}
+                className="absolute inset-y-0 right-0 flex items-center px-4
+                 text-sm font-bold text-slate-600
+                 hover:text-blue-700 transition-colors"
+              >
+                {showPassword ? "🙈" : "👁"}
+              </button>
+            </div>
           </div>
 
           {error && (

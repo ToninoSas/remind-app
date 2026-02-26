@@ -12,6 +12,7 @@ export default function AnagraficaPaziente({ data, patientId }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [editData, setEditData] = useState({
     nome: data.info.First_Name,
@@ -41,6 +42,7 @@ export default function AnagraficaPaziente({ data, patientId }) {
       editData,
     );
     if (res.success) {
+      setShowPassword(false);
       setIsEditing(false);
       setShowSuccess(true);
 
@@ -191,15 +193,29 @@ export default function AnagraficaPaziente({ data, patientId }) {
               <label className="text-[10px] font-black text-slate-800 uppercase ml-1">
                 Nuova Password (opzionale)
               </label>
-              <input
-                type="password"
-                value={editData.password}
-                onChange={(e) =>
-                  setEditData({ ...editData, password: e.target.value })
-                }
-                placeholder="Lascia vuoto per non modificare"
-                className="w-full p-4 bg-white border border-slate-300 text-slate-950 font-bold rounded-2xl mt-1 outline-none focus:ring-2 focus:ring-blue-600"
-              />
+              <div className="relative mt-1">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={editData.password}
+                  onChange={(e) =>
+                    setEditData({ ...editData, password: e.target.value })
+                  }
+                  placeholder="Lascia vuoto per non modificare"
+                  className="w-full p-4 pr-16 bg-white border border-slate-300 
+               text-slate-950 font-bold rounded-2xl 
+               outline-none focus:ring-2 focus:ring-blue-600"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute inset-y-0 right-0 flex items-center px-4
+               text-sm font-bold text-slate-600
+               hover:text-blue-700 transition-colors"
+                >
+                  {showPassword ? "🙈" : "👁"}
+                </button>
+              </div>
             </div>
           </div>
           <div className="space-y-5">

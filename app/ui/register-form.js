@@ -11,6 +11,7 @@ export default function RegisterForm() {
 
   const [loading, setLoading] = useState(false);
   const [isValid, setIsValid] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     nome: "",
@@ -25,7 +26,9 @@ export default function RegisterForm() {
     nome: z.string().min(1, "Il nome è obbligatorio"),
     cognome: z.string().min(1, "Il cognome è obbligatorio"),
     email: z.string().email("Email non valida"),
-    password: z.string().min(8, "La password deve contenere almeno 8 caratteri"),
+    password: z
+      .string()
+      .min(8, "La password deve contenere almeno 8 caratteri"),
     tipologia: z.enum(["Familiare", "Professionista"]),
   });
 
@@ -49,7 +52,9 @@ export default function RegisterForm() {
 
     const result = schema.safeParse(formData);
     if (!result.success) {
-      const firstError = Object.values(result.error.formErrors.fieldErrors)[0][0];
+      const firstError = Object.values(
+        result.error.formErrors.fieldErrors,
+      )[0][0];
       alert(firstError);
       return;
     }
@@ -111,14 +116,27 @@ export default function RegisterForm() {
           className="w-full p-4 border border-slate-300 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600"
         />
 
-        <input
-          name="password"
-          type="password"
-          placeholder="Password (min 8 caratteri)"
-          value={formData.password}
-          onChange={handleChange}
-          className="w-full p-4 border border-slate-300 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600"
-        />
+        <div className="relative">
+          <input
+            name="password"
+            type={showPassword ? "text" : "password"}
+            placeholder="Password (min 8 caratteri)"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full p-4 pr-16 border border-slate-300 rounded-2xl 
+               outline-none focus:ring-2 focus:ring-blue-600"
+          />
+
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute inset-y-0 right-0 flex items-center px-4
+               text-sm font-bold text-slate-600
+               hover:text-blue-700 transition-colors"
+          >
+            {showPassword ? "🙈" : "👁"}
+          </button>
+        </div>
 
         <select
           name="tipologia"
@@ -140,7 +158,10 @@ export default function RegisterForm() {
 
         <p className="text-center text-sm text-slate-700">
           Hai già un account?{" "}
-          <Link href="/login" className="text-blue-600 font-semibold hover:underline">
+          <Link
+            href="/login"
+            className="text-blue-600 font-semibold hover:underline"
+          >
             Accedi qui
           </Link>
         </p>
