@@ -58,10 +58,10 @@ export default function DettaglioBox({
                     <div className="flex justify-between items-start mb-6">
                         <div className="max-w-2xl">
                             <span className="bg-blue-50 text-blue-800 border border-blue-200 px-3 py-1 rounded-lg font-black text-[10px] uppercase tracking-widest">
-                                {initialBoxInfo?.Category}
+                                {initialBoxInfo?.Category || "Senza Categoria"}
                             </span>
                             <h1 className="text-5xl font-black text-slate-950 tracking-tighter italic mt-3">
-                                {initialBoxInfo?.Title}
+                                {initialBoxInfo?.Title || "Senza titolo"}
                             </h1>
                         </div>
                         <div className="flex gap-2">
@@ -95,7 +95,10 @@ export default function DettaglioBox({
                                 onDelete={async () => {
                                     if (confirm("Eliminare?")) {
                                         await deleteMemoryItemAction(item.Id, boxId, pazienteId);
-                                        router.refresh();
+
+                                        if(res?.error){
+                                            alert(res.error);
+                                        }
                                     }
                                 }}
                             />
@@ -160,7 +163,7 @@ function MemoryItemCard({ item, onEdit, onDelete }) {
                                 {item.Title}
                             </h4>
                             <p className="text-[10px] font-black text-blue-700 uppercase tracking-widest mt-1">
-                                {item.Location} • {item.Date}
+                                {item?.Location || "Luogo non specificato"} • {item.Date || "Data non specificata"}
                             </p>
                         </div>
 
@@ -182,7 +185,7 @@ function MemoryItemCard({ item, onEdit, onDelete }) {
                     </div>
 
                     <p className="text-slate-700 font-medium italic leading-relaxed line-clamp-3">
-                        "{item.Text}"
+                        {item.Text}
                     </p>
                 </div>
             </div>
