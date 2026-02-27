@@ -34,7 +34,11 @@ export default function DettaglioBox({
     const handleDeleteBox = async () => {
         if (!confirm("Sei sicuro? Questo eliminerà il box e tutti i ricordi contenuti.")) return;
         const res = await deleteMemoryBoxAction(boxId, pazienteId);
-        if (res.success) router.push(`/pazienti/${pazienteId}/ricordi`);
+        if (res.success) {
+            router.push(`/pazienti/${pazienteId}/ricordi`);
+        }else{
+            alert(res.error);
+        }
     };
 
     return (
