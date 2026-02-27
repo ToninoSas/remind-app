@@ -5,11 +5,11 @@ import { useAuth } from "@/context/auth-context";
 import Link from "next/link";
 
 export default function LoginForm() {
-  const { login } = useAuth();
-
+  const { login } = useAuth(); 
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -34,8 +34,8 @@ export default function LoginForm() {
         throw new Error("Inserisci un'email valida.");
       }
 
-      if (password.length < 6) {
-        throw new Error("La password deve contenere almeno 6 caratteri.");
+      if (password.length < 8) {
+        throw new Error("La password deve contenere almeno 8 caratteri.");
       }
 
       await login(email, password);
@@ -84,7 +84,7 @@ export default function LoginForm() {
                 name="password"
                 type={showPassword ? "text" : "password"}
                 required
-                minLength={6}
+                minLength={8}
                 disabled={loading}
                 placeholder="••••••••"
                 className="w-full p-4 pr-16 bg-white border border-slate-300 rounded-2xl
