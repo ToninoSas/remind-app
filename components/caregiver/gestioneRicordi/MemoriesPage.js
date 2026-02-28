@@ -88,6 +88,7 @@ export default function DettaglioBox({
                         </div>
                     ) : (
                         initialItems.map((item) => (
+                            //lo sviluppo della componente sta sotto...
                             <MemoryItemCard
                                 key={item.Id}
                                 item={item}

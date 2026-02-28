@@ -23,12 +23,17 @@ export default function EditMemoryItemModal({
   });
 
   const handleFileChange = async (e) => {
+    //prende il primo file caricato
     const file = e.target.files[0];
     if (!file) return;
 
     setLoading(true);
+    //i file non possono essere inviati come testo JSON
+    // creiamo un oggetto in modo tale che possiamo inviare i dati
     const upData = new FormData();
+    //inserisco il file
     upData.append("file", file);
+
     const res = await uploadMediaAction(upData);
 
     if (res.success) {
@@ -36,6 +41,7 @@ export default function EditMemoryItemModal({
         ...formData,
         url: res.url,
         tipo:
+        //split prende la prima parte del type (image, video ecc...)
           file.type.split("/")[0] === "image"
             ? "foto"
             : file.type.split("/")[0],

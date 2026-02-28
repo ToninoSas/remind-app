@@ -3,7 +3,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 export default function NavItem({ item, onClick }) {
+  //uso l'hook di next usePathName in modo tale da capire dove si trova l'utente
   const pathname = usePathname();
+  //se il pathname inizia con l'href attributo dell'oggetto item diventa true
   const isActive = pathname.startsWith(item.href);
 
   return (

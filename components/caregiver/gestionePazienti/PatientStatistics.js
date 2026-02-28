@@ -3,11 +3,14 @@ import { useMemo } from "react";
 
 export default function StatistichePaziente({ stats }) {
   console.log("Stats ricevuti in PatientStatistics:", stats);
+//useMemo verifica che stats non cambino, se cambiano esegue di nuovo i calcoli
   const metrics = useMemo(() => {
     // Controllo di sicurezza se stats è nullo o vuoto
     if (!stats || stats.length === 0) return null;
 
     // ATTENZIONE: Usiamo i nomi esatti delle colonne del DB (Risposte_totali, etc.)
+    //reduce trasforma l'oggetto in un un numero
+    //acc tiene il conto delle somme e curr è praticamente il contatore che fa scorrere gli oggetti
     const total = stats.reduce(
       (acc, curr) => acc + (Number(curr.Total_Answers) || 0),
       0,
@@ -18,6 +21,7 @@ export default function StatistichePaziente({ stats }) {
     );
 
     // Calcolo umore medio
+    //validMoods diventa un array composto da stati emotivi diversi da null
     const validMoods = stats.filter((s) => s.Emotional_State !== null);
     const moodSum = validMoods.reduce(
       (acc, curr) => acc + curr.Emotional_State,

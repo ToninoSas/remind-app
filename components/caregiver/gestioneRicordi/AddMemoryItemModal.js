@@ -20,15 +20,19 @@ export default function AddMemoryItemModal({ boxId, onClose, onSuccess }) {
 
   const handleButtonClick = () => {
     // Simula il click sull'input nascosto quando premiamo il bottone stilizzato
+    //react clicca per noi l'input type = file
     fileInputRef.current.click();
   };
 
   const handleFileChange = async (e) => {
+    //ci assicuriamo di prendere il primo file
     const file = e.target.files[0];
     if (!file) return;
 
     setLoading(true);
+    //i file non possono essere inviati come testo JSON quindi creo l'oggetto
     const upData = new FormData();
+    //inserisco il file nell'oggetto 
     upData.append("file", file);
     // Carichiamo il file e otteniamo l'URL
     const res = await uploadMediaAction(upData);
@@ -39,6 +43,9 @@ export default function AddMemoryItemModal({ boxId, onClose, onSuccess }) {
         ...formData,
         url: res.url,
         tipo:
+        //ogni file ha un mime type, .split divide la strinda dove c'è la barra e trasforma in un oggetto
+        //prende la prima parola...se è image->foto 
+        //altrimenti mette direttamente la categoria trovata
           file.type.split("/")[0] === "image"
             ? "foto"
             : file.type.split("/")[0],
@@ -93,8 +100,8 @@ export default function AddMemoryItemModal({ boxId, onClose, onSuccess }) {
 
           <input
             type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
+            ref={fileInputRef} //aggancio il fileInputRef
+            onChange={handleFileChange} //a sua volta chiama handleFileChange
             className="hidden"
             accept="image/*,video/*" // Opzionale: limita i tipi di file
           />
