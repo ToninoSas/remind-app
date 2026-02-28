@@ -12,7 +12,6 @@ export default async function SchedaPazientePage({ params, searchParams }) {
   console.log("Dati paziente:", data);
 
    if (!data?.info) {
-    // 🔥 Questo farà triggerare edit/404.js
     notFound();
   }
 

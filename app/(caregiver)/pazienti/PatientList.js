@@ -7,8 +7,6 @@ export default async function PatientsList() {
   const cookieStore = await cookies();
   const caregiverId = cookieStore.get("profile-id")?.value;
 
-  // ⬇️ QUI avviene il delay di 4 secondi
-  //   await new Promise(resolve => setTimeout(resolve, 4000)); // <-- ritardo reale
   const pazienti = await getPatientsAction(caregiverId);
 
   return (
